@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- ─── Patterns ─────────────────────────────────────────────────── -->
+    <property name="CONSOLE_PATTERN"
+              value="%d{HH:mm:ss.SSS} %highlight(%-5level) %cyan([%thread]) %yellow(%logger{36}) - %msg%n"/>
+
+    <property name="FILE_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n"/>
+
+    <property name="LOG_DIR" value="logs"/>
+    <property name="LOG_FILE" value="${LOG_DIR}/chargers-manager"/>
+
+    <!-- ─── Appenders ─────────────────────────────────────────────────── -->
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${FILE_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ─── Dev profile: verbose ──────────────────────────────────────── -->
+    <springProfile name="dev">
+        <logger name="com.chargersmanager.infrastructure.config.LoggingAspect" level="DEBUG"/>
+        <logger name="com.chargersmanager.application"                          level="DEBUG"/>
+        <logger name="com.chargersmanager.domain"                               level="DEBUG"/>
+        <logger name="com.chargersmanager.infrastructure.adapter.rest"          level="DEBUG"/>
+        <logger name="com.chargersmanager.infrastructure.adapter.persistence"   level="DEBUG"/>
+        <logger name="org.hibernate.SQL"                                         level="DEBUG"/>
+        <logger name="org.hibernate.orm.jdbc.bind"                              level="TRACE"/>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+
+    <!-- ─── Prod profile: quiet ───────────────────────────────────────── -->
+    <springProfile name="prod">
+        <logger name="com.chargersmanager" level="WARN"/>
+        <root level="ERROR">
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+
+    <!-- ─── Default (no profile): balanced ───────────────────────────── -->
+    <springProfile name="!dev &amp; !prod">
+        <logger name="com.chargersmanager.infrastructure.config.LoggingAspect" level="INFO"/>
+        <logger name="com.chargersmanager.application"                          level="INFO"/>
+        <logger name="com.chargersmanager.domain"                               level="WARN"/>
+        <logger name="com.chargersmanager.infrastructure.adapter.rest"          level="INFO"/>
+        <logger name="com.chargersmanager.infrastructure.adapter.persistence"   level="DEBUG"/>
+        <root level="WARN">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+
+</configuration>

@@ -1,0 +1,8 @@
+apiVersion: 1
+
+providers:
+  - name: chargers-manager
+    folder: Chargers Manager
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards

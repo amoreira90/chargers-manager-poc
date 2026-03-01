@@ -1,0 +1,17 @@
+spring:
+  jpa:
+    show-sql: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+  endpoint:
+    health:
+      show-details: never
+
+logging:
+  level:
+    root: ERROR
+    com.chargersmanager: WARN
