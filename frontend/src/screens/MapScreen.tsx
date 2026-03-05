@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { chargerService } from "../api";
 import { useTheme } from "../context/ThemeContext";
 import { ChargerStation } from "../types";
 
@@ -66,61 +67,8 @@ const MapScreen = ({ navigation, route }: any) => {
 
   const loadChargers = async () => {
     try {
-      const mockChargers: ChargerStation[] = [
-        {
-          id: "1",
-          name: "Cargador Intendencia",
-          location: {
-            latitude: -34.9063,
-            longitude: -56.191,
-            address: "18 de Julio 1360, Montevideo",
-          },
-          availability: "available",
-          powerOutput: 150,
-          connectorType: "CCS",
-          pricePerKwh: 2.5,
-        },
-        {
-          id: "2",
-          name: "Cargador Tres Cruces",
-          location: {
-            latitude: -34.8932,
-            longitude: -56.1677,
-            address: "Bulevar Artigas 1825, Montevideo",
-          },
-          availability: "charging",
-          powerOutput: 120,
-          connectorType: "Type2",
-          pricePerKwh: 2.3,
-        },
-        {
-          id: "3",
-          name: "Cargador Punta Carretas",
-          location: {
-            latitude: -34.9215,
-            longitude: -56.159,
-            address: "Ellauri 350, Montevideo",
-          },
-          availability: "available",
-          powerOutput: 100,
-          connectorType: "CCS",
-          pricePerKwh: 2.7,
-        },
-        {
-          id: "4",
-          name: "Cargador Ciudad Vieja",
-          location: {
-            latitude: -34.907,
-            longitude: -56.205,
-            address: "Sarandí 460, Montevideo",
-          },
-          availability: "available",
-          powerOutput: 180,
-          connectorType: "CCS",
-          pricePerKwh: 3.0,
-        },
-      ];
-      setChargers(mockChargers);
+      const data = await chargerService.getAvailableChargers();
+      setChargers(data);
       setLoading(false);
     } catch {
       Alert.alert("Error", "No se pudieron cargar los cargadores");

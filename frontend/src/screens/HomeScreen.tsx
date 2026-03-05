@@ -11,6 +11,7 @@ import {
     View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { chargerService } from "../api";
 import { useTheme } from "../context/ThemeContext";
 import { ChargerStation } from "../types";
 
@@ -28,36 +29,8 @@ const HomeScreen = ({ navigation }: any) => {
   const loadChargers = async () => {
     try {
       setLoading(true);
-      // Por ahora usamos datos mock, se conectará con la API real
-      const mockChargers: ChargerStation[] = [
-        {
-          id: "1",
-          name: "Cargador Intendencia",
-          location: {
-            latitude: -34.9063,
-            longitude: -56.191,
-            address: "18 de Julio 1360, Montevideo",
-          },
-          availability: "available",
-          powerOutput: 150,
-          connectorType: "CCS",
-          pricePerKwh: 2.5,
-        },
-        {
-          id: "2",
-          name: "Cargador Tres Cruces",
-          location: {
-            latitude: -34.8932,
-            longitude: -56.1677,
-            address: "Bulevar Artigas 1825, Montevideo",
-          },
-          availability: "charging",
-          powerOutput: 120,
-          connectorType: "Type2",
-          pricePerKwh: 2.3,
-        },
-      ];
-      setChargers(mockChargers);
+      const data = await chargerService.getAvailableChargers();
+      setChargers(data);
     } catch (error) {
       Alert.alert("Error", "No se pudieron cargar los cargadores");
     } finally {

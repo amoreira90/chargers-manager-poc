@@ -1,8 +1,20 @@
+import Constants from 'expo-constants';
 import axios from 'axios';
 
-// Configuración base de API
-// Nota: En Expo, las variables de entorno deben tener el prefijo EXPO_PUBLIC_
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8080';
+// En desarrollo con Expo Go, resuelve la IP del host automáticamente.
+// Expo ya conoce la IP de tu Mac — reutilizamos esa misma para el backend.
+const getApiBaseUrl = (): string => {
+  if (__DEV__) {
+    const hostUri = Constants.expoConfig?.hostUri;
+    const host = hostUri?.split(':')[0];
+    if (host) {
+      return `http://${host}:8080`;
+    }
+  }
+  return process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8080';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 const API_TIMEOUT = Number(process.env.EXPO_PUBLIC_API_TIMEOUT) || 10000;
 
 const apiClient = axios.create({
