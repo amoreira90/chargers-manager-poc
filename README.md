@@ -4,18 +4,18 @@ POC de gestión de cargadores eléctricos implementado con **arquitectura hexago
 
 ## Tech Stack
 
-| Tecnología | Rol |
-|---|---|
-| Spring Boot 3.2 | Framework principal |
-| Java 17 | Lenguaje |
-| H2 (in-memory) | Base de datos |
-| MapStruct | Mapeo entre capas |
-| Lombok | Reducción de boilerplate |
-| Micrometer + Prometheus | Métricas |
-| Grafana | Visualización de métricas y logs |
-| Loki + Promtail | Agregación de logs |
-| Docker + Docker Compose | Containerización |
-| springdoc-openapi | Documentación de API |
+| Tecnología              | Rol                              |
+| ----------------------- | -------------------------------- |
+| Spring Boot 3.2         | Framework principal              |
+| Java 17                 | Lenguaje                         |
+| H2 (in-memory)          | Base de datos                    |
+| MapStruct               | Mapeo entre capas                |
+| Lombok                  | Reducción de boilerplate         |
+| Micrometer + Prometheus | Métricas                         |
+| Grafana                 | Visualización de métricas y logs |
+| Loki + Promtail         | Agregación de logs               |
+| Docker + Docker Compose | Containerización                 |
+| springdoc-openapi       | Documentación de API             |
 
 ## Arquitectura
 
@@ -55,12 +55,13 @@ Ver documentación detallada en [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ### Para correr con Docker (recomendado)
 
-| Herramienta | Versión mínima | Descarga |
-|---|---|---|
+| Herramienta    | Versión mínima                  | Descarga                                                      |
+| -------------- | ------------------------------- | ------------------------------------------------------------- |
 | Docker Desktop | 4.x (incluye Docker Compose v2) | [docker.com](https://www.docker.com/products/docker-desktop/) |
-| Git | cualquiera | [git-scm.com](https://git-scm.com/downloads) |
+| Git            | cualquiera                      | [git-scm.com](https://git-scm.com/downloads)                  |
 
 Verificar instalación:
+
 ```bash
 docker --version        # Docker version 24.x o superior
 docker compose version  # Docker Compose version v2.x
@@ -72,12 +73,13 @@ docker compose version  # Docker Compose version v2.x
 
 Adicionalmente a Git y Docker (para Prometheus/Grafana/Loki):
 
-| Herramienta | Versión mínima | Descarga |
-|---|---|---|
-| Java JDK | 17 | [Adoptium](https://adoptium.net/) |
-| Maven | 3.9+ | [maven.apache.org](https://maven.apache.org/download.cgi) — o usar el wrapper `./mvnw` incluido |
+| Herramienta | Versión mínima | Descarga                                                                                        |
+| ----------- | -------------- | ----------------------------------------------------------------------------------------------- |
+| Java JDK    | 17             | [Adoptium](https://adoptium.net/)                                                               |
+| Maven       | 3.9+           | [maven.apache.org](https://maven.apache.org/download.cgi) — o usar el wrapper `./mvnw` incluido |
 
 Verificar instalación:
+
 ```bash
 java -version   # openjdk 17 o superior
 mvn -version    # Apache Maven 3.9.x
@@ -103,16 +105,16 @@ El primer build descarga dependencias Maven — los siguientes serán más rápi
 
 Base URL: `http://localhost:8080/api/v1`
 
-| Método | Endpoint | Descripción | Status codes |
-|---|---|---|---|
-| `POST` | `/chargers` | Crear un cargador | 201, 400 |
-| `GET` | `/chargers` | Listar todos los cargadores | 200 |
-| `GET` | `/chargers/available` | Listar cargadores disponibles | 200 |
-| `GET` | `/chargers/{id}` | Obtener cargador por ID | 200, 404 |
-| `PATCH` | `/chargers/{id}/activate` | Activar un cargador | 200, 404, 409 |
-| `PATCH` | `/chargers/{id}/deactivate` | Desactivar un cargador | 200, 404 |
-| `PATCH` | `/chargers/{id}/start-charging` | Iniciar carga | 200, 404, 409 |
-| `PATCH` | `/chargers/{id}/stop-charging` | Detener carga | 200, 404, 409 |
+| Método  | Endpoint                        | Descripción                   | Status codes  |
+| ------- | ------------------------------- | ----------------------------- | ------------- |
+| `POST`  | `/chargers`                     | Crear un cargador             | 201, 400      |
+| `GET`   | `/chargers`                     | Listar todos los cargadores   | 200           |
+| `GET`   | `/chargers/available`           | Listar cargadores disponibles | 200           |
+| `GET`   | `/chargers/{id}`                | Obtener cargador por ID       | 200, 404      |
+| `PATCH` | `/chargers/{id}/activate`       | Activar un cargador           | 200, 404, 409 |
+| `PATCH` | `/chargers/{id}/deactivate`     | Desactivar un cargador        | 200, 404      |
+| `PATCH` | `/chargers/{id}/start-charging` | Iniciar carga                 | 200, 404, 409 |
+| `PATCH` | `/chargers/{id}/stop-charging`  | Detener carga                 | 200, 404, 409 |
 
 ### Ejemplo: Crear cargador
 
@@ -147,20 +149,20 @@ Swagger UI disponible en: **http://localhost:8080/swagger-ui.html**
         deactivate (desde AVAILABLE)
 ```
 
-| Estado | Descripción |
-|---|---|
-| `AVAILABLE` | Disponible para cargar |
-| `CHARGING` | En proceso de carga |
-| `OUT_OF_SERVICE` | Fuera de servicio |
+| Estado           | Descripción            |
+| ---------------- | ---------------------- |
+| `AVAILABLE`      | Disponible para cargar |
+| `CHARGING`       | En proceso de carga    |
+| `OUT_OF_SERVICE` | Fuera de servicio      |
 
 ## Monitoring
 
-| Servicio | URL | Credenciales |
-|---|---|---|
-| Grafana | http://localhost:3000 | admin / admin |
-| Prometheus | http://localhost:9090 | — |
-| Loki | http://localhost:3100/ready | — |
-| Swagger UI | http://localhost:8080/swagger-ui.html | — |
+| Servicio   | URL                                   | Credenciales  |
+| ---------- | ------------------------------------- | ------------- |
+| Grafana    | http://localhost:3000                 | admin / admin |
+| Prometheus | http://localhost:9090                 | —             |
+| Loki       | http://localhost:3100/ready           | —             |
+| Swagger UI | http://localhost:8080/swagger-ui.html | —             |
 
 ### Ver métricas en Grafana
 
@@ -206,3 +208,55 @@ docker-compose up prometheus grafana loki promtail
 
 - [Arquitectura hexagonal](docs/ARCHITECTURE.md) — diseño, capas, decisiones
 - [Runbook de operaciones](docs/RUNBOOK.md) — comandos Docker, troubleshooting
+
+## Frontends
+
+Este repositorio incluye dos frontends:
+
+- `admin/`: panel web administrativo (Vite + React)
+- `frontend/`: app mobile/web con Expo (React Native)
+
+### Admin Web (`admin/`)
+
+Panel web responsive para gestionar cargadores.
+
+```bash
+cd admin
+cp .env.example .env
+npm install
+npm run dev
+```
+
+- UI: `http://localhost:5173`
+- Backend esperado: `http://localhost:8080`
+
+Mas detalles en `admin/README.md`.
+
+### App Expo (`frontend/`)
+
+Aplicacion mobile (iOS/Android) y web con Expo.
+
+```bash
+cd frontend
+cp .env.example .env
+npm install
+npm start
+```
+
+Comandos utiles:
+
+```bash
+npm run android
+npm run ios
+npm run web
+```
+
+Variables de entorno principales (`frontend/.env`):
+
+```env
+EXPO_PUBLIC_API_URL=http://localhost:8080
+EXPO_PUBLIC_MERCADOPAGO_PUBLIC_KEY=tu_token_aqui
+EXPO_PUBLIC_GOOGLE_MAPS_API_KEY=tu_api_key_aqui
+```
+
+Mas detalles en `frontend/README.md` y `frontend/SETUP.md`.
