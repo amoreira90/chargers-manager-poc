@@ -59,7 +59,7 @@ jobs:
           )
 
           payload = json.dumps({
-              "model": "claude-sonnet-4-6",
+              "model": "claude-3-5-sonnet-20241022",
               "max_tokens": 1500,
               "messages": [{"role": "user", "content": prompt}]
           }).encode()
@@ -74,8 +74,13 @@ jobs:
               },
           )
 
-          with urllib.request.urlopen(req) as resp:
-              body = json.loads(resp.read())
+          try:
+              with urllib.request.urlopen(req) as resp:
+                  body = json.loads(resp.read())
+          except urllib.error.HTTPError as e:
+              error_body = e.read().decode()
+              print(f"API error {e.code}: {error_body}")
+              raise
 
           review = body["content"][0]["text"]
 
