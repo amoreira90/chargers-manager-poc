@@ -3,6 +3,8 @@ import PageBreadcrumb from "../components/common/PageBreadCrumb";
 import PageMeta from "../components/common/PageMeta";
 import { fetchChargers, createCharger, runChargerAction } from "../api";
 import { Charger, ChargerStatus, ChargerAction, CreateChargerPayload } from "../types";
+import LocationPicker from "../components/map/LocationPicker";
+import AddressAutocomplete from "../components/map/AddressAutocomplete";
 
 export default function Chargers() {
   const [chargers, setChargers] = useState<Charger[]>([]);
@@ -117,51 +119,33 @@ export default function Chargers() {
               <input
                 type="text"
                 value={newCharger.name}
-                onChange={(e) => setNewCharger({ ...newCharger, name: e.target.value })}
+                onChange={(e) => setNewCharger((prev) => ({ ...prev, name: e.target.value }))}
                 className="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white dark:focus:border-brand-800"
                 required
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Dirección
-              </label>
-              <input
-                type="text"
-                value={newCharger.address}
-                onChange={(e) => setNewCharger({ ...newCharger, address: e.target.value })}
-                className="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white dark:focus:border-brand-800"
-                required
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Latitud
-                </label>
-                <input
-                  type="number"
-                  step="any"
-                  value={newCharger.latitude}
-                  onChange={(e) => setNewCharger({ ...newCharger, latitude: Number(e.target.value) })}
-                  className="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white dark:focus:border-brand-800"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Longitud
-                </label>
-                <input
-                  type="number"
-                  step="any"
-                  value={newCharger.longitude}
-                  onChange={(e) => setNewCharger({ ...newCharger, longitude: Number(e.target.value) })}
-                  className="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white dark:focus:border-brand-800"
-                  required
-                />
-              </div>
-            </div>
+            
+            <AddressAutocomplete
+              value={newCharger.address}
+              onChange={(address) => setNewCharger((prev) => ({ ...prev, address }))}
+              onSelect={(address, lat, lon) => 
+                setNewCharger((prev) => ({ ...prev, address, latitude: lat, longitude: lon }))
+              }
+              required
+            />
+            
+            <LocationPicker
+              address={newCharger.address}
+              latitude={newCharger.latitude}
+              longitude={newCharger.longitude}
+              onLocationChange={(lat, lng) => 
+                setNewCharger((prev) => ({ ...prev, latitude: lat, longitude: lng }))
+              }
+              onAddressChange={(address) =>
+                setNewCharger((prev) => ({ ...prev, address }))
+              }
+            />
+
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Potencia (kW)
@@ -169,7 +153,7 @@ export default function Chargers() {
               <input
                 type="number"
                 value={newCharger.powerKilowatts}
-                onChange={(e) => setNewCharger({ ...newCharger, powerKilowatts: Number(e.target.value) })}
+                onChange={(e) => setNewCharger((prev) => ({ ...prev, powerKilowatts: Number(e.target.value) }))}
                 className="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white dark:focus:border-brand-800"
                 min="1"
                 required
