@@ -1,0 +1,81 @@
+name: Claude Code Review
+
+on:
+  pull_request:
+    branches: [develop, master]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  review:
+    name: Claude Review
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get PR diff
+        id: diff
+        run: |
+          git diff origin/${{ github.base_ref }}...HEAD > pr_diff.txt
+          DIFF_SIZE=$(wc -c < pr_diff.txt)
+          echo "diff_size=$DIFF_SIZE" >> $GITHUB_OUTPUT
+          echo "PR diff size: $DIFF_SIZE bytes"
+
+      - name: Review with Claude
+        if: steps.diff.outputs.diff_size != '0'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          DIFF=$(cat pr_diff.txt)
+
+          # Truncate if diff is too large
+          if [ ${#DIFF} -gt 60000 ]; then
+            DIFF="${DIFF:0:60000}
+          ... [diff truncated due to size]"
+          fi
+
+          RESPONSE=$(curl -s https://api.anthropic.com/v1/messages \
+            -H "x-api-key: $ANTHROPIC_API_KEY" \
+            -H "anthropic-version: 2023-06-01" \
+            -H "content-type: application/json" \
+            -d "$(jq -n \
+              --arg diff "$DIFF" \
+              --arg pr_title "${{ github.event.pull_request.title }}" \
+              '{
+                model: "claude-sonnet-4-6",
+                max_tokens: 1500,
+                messages: [{
+                  role: "user",
+                  content: ("You are a senior software engineer reviewing a pull request titled \"" + $pr_title + "\".\n\nReview the following diff and provide concise, actionable feedback in English. Structure your response with these sections (only include sections with actual findings):\n\n**🐛 Bugs & Issues** — logic errors, edge cases, exceptions not handled\n**🔒 Security** — vulnerabilities, exposed secrets, SQL injection, XSS, etc.\n**⚡ Performance** — inefficient queries, unnecessary loops, memory leaks\n**🧹 Code Quality** — naming, duplication, SOLID violations, dead code\n**✅ Suggestions** — improvements and best practices\n\nIf the code looks good, say so briefly. Be constructive and concise.\n\nDiff:\n```\n" + $diff + "\n```")
+                }]
+              }'
+            )")
+
+          echo "$RESPONSE" | jq -r '.content[0].text' > review.txt
+
+          # Fail if API returned an error
+          if grep -q '"error"' review.txt || [ ! -s review.txt ]; then
+            echo "Claude API error:"
+            cat review.txt
+            exit 1
+          fi
+
+      - name: Post review as PR comment
+        if: steps.diff.outputs.diff_size != '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const review = fs.readFileSync('review.txt', 'utf8');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `## 🤖 Claude Code Review\n\n${review}\n\n---\n*Automated review by [Claude Sonnet 4.6](https://anthropic.com)*`
+            });
