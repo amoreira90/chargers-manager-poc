@@ -1,25 +1,21 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import {
-    DarkTheme,
-    DefaultTheme,
-    NavigationContainer,
-} from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import React from "react";
-import { useAuth } from "../context/AuthContext";
-import { useTheme } from "../context/ThemeContext";
-import {
-    AuthScreen,
-    ChargingDetailScreen,
-    HistoryScreen,
-    HomeScreen,
-    MapScreen,
-    PaymentScreen,
-    PreAuthPaymentScreen,
-    ProfileScreen,
-    QRScannerScreen,
-} from "../screens";
+  AuthScreen,
+  ChargingDetailScreen,
+  HistoryScreen,
+  HomeScreen,
+  MapScreen,
+  PaymentScreen,
+  PreAuthPaymentScreen,
+  ProfileScreen,
+  QRScannerScreen,
+} from '../screens';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -44,11 +40,7 @@ const HomeStack = () => {
       }}
     >
       <Stack.Screen name="HomeScreen" component={HomeScreen} />
-      <Stack.Screen
-        name="Map"
-        component={MapScreen}
-        options={{ animationEnabled: true }}
-      />
+      <Stack.Screen name="Map" component={MapScreen} options={{ animationEnabled: true }} />
       <Stack.Screen
         name="Scanner"
         component={QRScannerScreen}
@@ -64,11 +56,7 @@ const HomeStack = () => {
         component={PreAuthPaymentScreen}
         options={{ animationEnabled: true }}
       />
-      <Stack.Screen
-        name="Payment"
-        component={PaymentScreen}
-        options={{ animationEnabled: true }}
-      />
+      <Stack.Screen name="Payment" component={PaymentScreen} options={{ animationEnabled: true }} />
     </Stack.Navigator>
   );
 };
@@ -98,24 +86,22 @@ const ProfileStack = () => {
 };
 
 const AppTabs = () => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName: any;
 
-          if (route.name === "Home") {
-            iconName = focused ? "home" : "home-outline";
-          } else if (route.name === "History") {
-            iconName = focused ? "history" : "history";
-          } else if (route.name === "Profile") {
-            iconName = focused ? "account" : "account-outline";
+          if (route.name === 'Home') {
+            iconName = focused ? 'home' : 'home-outline';
+          } else if (route.name === 'History') {
+            iconName = focused ? 'history' : 'history';
+          } else if (route.name === 'Profile') {
+            iconName = focused ? 'account' : 'account-outline';
           }
 
-          return (
-            <MaterialCommunityIcons name={iconName} size={size} color={color} />
-          );
+          return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: colors.tabBarActive,
         tabBarInactiveTintColor: colors.tabBarInactive,
@@ -137,21 +123,21 @@ const AppTabs = () => {
         name="Home"
         component={HomeStack}
         options={{
-          tabBarLabel: "Inicio",
+          tabBarLabel: 'Inicio',
         }}
       />
       <Tab.Screen
         name="History"
         component={HistoryStack}
         options={{
-          tabBarLabel: "Historial",
+          tabBarLabel: 'Historial',
         }}
       />
       <Tab.Screen
         name="Profile"
         component={ProfileStack}
         options={{
-          tabBarLabel: "Perfil",
+          tabBarLabel: 'Perfil',
         }}
       />
     </Tab.Navigator>
