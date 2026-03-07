@@ -22,7 +22,7 @@ const apiClient = axios.create({
   timeout: API_TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json',
+    Accept: 'application/json',
   },
 });
 
@@ -36,7 +36,7 @@ apiClient.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Interceptor para manejo de respuestas y errores
@@ -57,7 +57,7 @@ apiClient.interceptors.response.use(
       console.error('Request Error:', error.message);
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default apiClient;

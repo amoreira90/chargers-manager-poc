@@ -1,5 +1,5 @@
-import { ChargerStation } from "../types";
-import apiClient from "./client";
+import { ChargerStation } from '../types';
+import apiClient from './client';
 
 // Respuesta del backend (solo campos que vienen de la BD)
 interface ChargerApiResponse {
@@ -13,14 +13,14 @@ interface ChargerApiResponse {
 }
 
 // Mapeo de status del backend al formato del frontend
-const mapStatus = (status: string): ChargerStation["availability"] => {
-  const statusMap: Record<string, ChargerStation["availability"]> = {
-    AVAILABLE: "available",
-    CHARGING: "charging",
-    MAINTENANCE: "maintenance",
-    OUT_OF_SERVICE: "maintenance",
+const mapStatus = (status: string): ChargerStation['availability'] => {
+  const statusMap: Record<string, ChargerStation['availability']> = {
+    AVAILABLE: 'available',
+    CHARGING: 'charging',
+    MAINTENANCE: 'maintenance',
+    OUT_OF_SERVICE: 'maintenance',
   };
-  return statusMap[status] || "maintenance";
+  return statusMap[status] || 'maintenance';
 };
 
 // Campos que no vienen del backend se mockean con defaults
@@ -34,13 +34,13 @@ const mapToChargerStation = (charger: ChargerApiResponse): ChargerStation => ({
   },
   availability: mapStatus(charger.status),
   powerOutput: charger.powerKilowatts,
-  connectorType: "CCS",       // mock: no está en la BD
-  pricePerKwh: 2.5,            // mock: no está en la BD
+  connectorType: 'CCS', // mock: no está en la BD
+  pricePerKwh: 2.5, // mock: no está en la BD
 });
 
 export const chargerService = {
   getAvailableChargers: async (): Promise<ChargerStation[]> => {
-    const response = await apiClient.get<ChargerApiResponse[]>("/api/v1/chargers");
+    const response = await apiClient.get<ChargerApiResponse[]>('/api/v1/chargers');
     return response.data.map(mapToChargerStation);
   },
 
@@ -50,7 +50,7 @@ export const chargerService = {
   },
 
   startChargingSession: async (chargerId: string) => {
-    const response = await apiClient.post("/api/v1/charging-sessions", {
+    const response = await apiClient.post('/api/v1/charging-sessions', {
       chargerId,
     });
     return response.data;
@@ -62,14 +62,12 @@ export const chargerService = {
   },
 
   stopChargingSession: async (sessionId: string) => {
-    const response = await apiClient.post(
-      `/api/v1/charging-sessions/${sessionId}/stop`,
-    );
+    const response = await apiClient.post(`/api/v1/charging-sessions/${sessionId}/stop`);
     return response.data;
   },
 
   getChargingHistory: async () => {
-    const response = await apiClient.get("/api/v1/charging-sessions/history");
+    const response = await apiClient.get('/api/v1/charging-sessions/history');
     return response.data;
   },
 };
