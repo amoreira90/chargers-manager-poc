@@ -24,7 +24,10 @@ export const createCharger = async (payload: CreateChargerPayload): Promise<Char
   return response.data;
 };
 
-export const runChargerAction = async (chargerId: string, action: ChargerAction): Promise<Charger> => {
+export const runChargerAction = async (
+  chargerId: string,
+  action: ChargerAction,
+): Promise<Charger> => {
   const response = await api.patch<Charger>(`/api/v1/chargers/${chargerId}/${action}`);
   return response.data;
 };

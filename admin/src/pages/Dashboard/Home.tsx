@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
-import { fetchChargers, toApiError } from "../../api";
-import PageMeta from "../../components/common/PageMeta";
-import type { Charger } from "../../types";
+import { useEffect, useMemo, useState } from 'react';
+import { fetchChargers, toApiError } from '../../api';
+import PageMeta from '../../components/common/PageMeta';
+import type { Charger } from '../../types';
 
 const formatKw = (value: number): string =>
-  new Intl.NumberFormat("es-AR", {
+  new Intl.NumberFormat('es-AR', {
     maximumFractionDigits: 1,
     minimumFractionDigits: 0,
   }).format(value);
@@ -19,12 +19,8 @@ function MetricCard({ label, value, hint }: MetricCardProps) {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
       <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
-      <h3 className="mt-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-        {value}
-      </h3>
-      {hint ? (
-        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{hint}</p>
-      ) : null}
+      <h3 className="mt-2 text-2xl font-semibold text-gray-800 dark:text-white/90">{value}</h3>
+      {hint ? <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{hint}</p> : null}
     </div>
   );
 }
@@ -68,17 +64,12 @@ export default function Home() {
 
   const metrics = useMemo(() => {
     const total = chargers.length;
-    const inUse = chargers.filter((charger) => charger.status === "CHARGING").length;
-    const outOfService = chargers.filter(
-      (charger) => charger.status === "OUT_OF_SERVICE",
-    ).length;
+    const inUse = chargers.filter((charger) => charger.status === 'CHARGING').length;
+    const outOfService = chargers.filter((charger) => charger.status === 'OUT_OF_SERVICE').length;
     const active = total - outOfService;
-    const installedPower = chargers.reduce(
-      (sum, charger) => sum + charger.powerKilowatts,
-      0,
-    );
+    const installedPower = chargers.reduce((sum, charger) => sum + charger.powerKilowatts, 0);
     const powerInUse = chargers
-      .filter((charger) => charger.status === "CHARGING")
+      .filter((charger) => charger.status === 'CHARGING')
       .reduce((sum, charger) => sum + charger.powerKilowatts, 0);
 
     return {
@@ -91,9 +82,9 @@ export default function Home() {
     };
   }, [chargers]);
 
-  const lastUpdated = new Date().toLocaleTimeString("es-AR", {
-    hour: "2-digit",
-    minute: "2-digit",
+  const lastUpdated = new Date().toLocaleTimeString('es-AR', {
+    hour: '2-digit',
+    minute: '2-digit',
   });
 
   return (
@@ -113,7 +104,7 @@ export default function Home() {
             </p>
           </div>
           <div className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700 dark:bg-brand-500/20 dark:text-brand-300">
-            {loading ? "Sincronizando..." : "Conectado al backend"}
+            {loading ? 'Sincronizando...' : 'Conectado al backend'}
           </div>
         </div>
 
@@ -134,20 +125,13 @@ export default function Home() {
             value={String(metrics.active)}
             hint="Disponibles + en uso"
           />
-          <MetricCard
-            label="Equipos en uso"
-            value={String(metrics.inUse)}
-            hint="Estado CHARGING"
-          />
+          <MetricCard label="Equipos en uso" value={String(metrics.inUse)} hint="Estado CHARGING" />
           <MetricCard
             label="Fuera de servicio"
             value={String(metrics.outOfService)}
             hint="Estado OUT_OF_SERVICE"
           />
-          <MetricCard
-            label="Potencia instalada"
-            value={`${formatKw(metrics.installedPower)} kW`}
-          />
+          <MetricCard label="Potencia instalada" value={`${formatKw(metrics.installedPower)} kW`} />
           <MetricCard
             label="kW en uso"
             value={`${formatKw(metrics.powerInUse)} kW`}
@@ -170,12 +154,19 @@ export default function Home() {
               <div>
                 <div className="mb-1 flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
                   <span>Disponibles</span>
-                  <span>{metrics.total > 0 ? Math.round(((metrics.active - metrics.inUse) / metrics.total) * 100) : 0}%</span>
+                  <span>
+                    {metrics.total > 0
+                      ? Math.round(((metrics.active - metrics.inUse) / metrics.total) * 100)
+                      : 0}
+                    %
+                  </span>
                 </div>
                 <div className="h-2 rounded-full bg-gray-200 dark:bg-gray-800">
                   <div
                     className="h-2 rounded-full bg-green-500"
-                    style={{ width: `${metrics.total > 0 ? ((metrics.active - metrics.inUse) / metrics.total) * 100 : 0}%` }}
+                    style={{
+                      width: `${metrics.total > 0 ? ((metrics.active - metrics.inUse) / metrics.total) * 100 : 0}%`,
+                    }}
                   />
                 </div>
               </div>
@@ -183,12 +174,16 @@ export default function Home() {
               <div>
                 <div className="mb-1 flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
                   <span>En carga</span>
-                  <span>{metrics.total > 0 ? Math.round((metrics.inUse / metrics.total) * 100) : 0}%</span>
+                  <span>
+                    {metrics.total > 0 ? Math.round((metrics.inUse / metrics.total) * 100) : 0}%
+                  </span>
                 </div>
                 <div className="h-2 rounded-full bg-gray-200 dark:bg-gray-800">
                   <div
                     className="h-2 rounded-full bg-blue-500"
-                    style={{ width: `${metrics.total > 0 ? (metrics.inUse / metrics.total) * 100 : 0}%` }}
+                    style={{
+                      width: `${metrics.total > 0 ? (metrics.inUse / metrics.total) * 100 : 0}%`,
+                    }}
                   />
                 </div>
               </div>
@@ -196,12 +191,19 @@ export default function Home() {
               <div>
                 <div className="mb-1 flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
                   <span>Fuera de servicio</span>
-                  <span>{metrics.total > 0 ? Math.round((metrics.outOfService / metrics.total) * 100) : 0}%</span>
+                  <span>
+                    {metrics.total > 0
+                      ? Math.round((metrics.outOfService / metrics.total) * 100)
+                      : 0}
+                    %
+                  </span>
                 </div>
                 <div className="h-2 rounded-full bg-gray-200 dark:bg-gray-800">
                   <div
                     className="h-2 rounded-full bg-red-500"
-                    style={{ width: `${metrics.total > 0 ? (metrics.outOfService / metrics.total) * 100 : 0}%` }}
+                    style={{
+                      width: `${metrics.total > 0 ? (metrics.outOfService / metrics.total) * 100 : 0}%`,
+                    }}
                   />
                 </div>
               </div>
@@ -212,8 +214,8 @@ export default function Home() {
                 </p>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   {chargers.length > 0
-                    ? `${chargers.length} cargadores registrados en ${new Set(chargers.map((charger) => charger.address.split(",").slice(-1)[0]?.trim() || "Sin ciudad")).size} ciudad(es).`
-                    : "Aún no hay cargadores para mostrar cobertura."}
+                    ? `${chargers.length} cargadores registrados en ${new Set(chargers.map((charger) => charger.address.split(',').slice(-1)[0]?.trim() || 'Sin ciudad')).size} ciudad(es).`
+                    : 'Aún no hay cargadores para mostrar cobertura.'}
                 </p>
               </div>
             </div>
@@ -235,9 +237,7 @@ export default function Home() {
             <h2 className="text-lg font-semibold text-gray-800 dark:text-white/90">
               Resumen rápido
             </h2>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Estado actual de la red
-            </p>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Estado actual de la red</p>
 
             <div className="mt-4 space-y-3">
               {chargers.slice(0, 8).map((charger) => (
@@ -248,9 +248,7 @@ export default function Home() {
                   <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                     {charger.name}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {charger.address}
-                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{charger.address}</p>
                   <p className="mt-1 text-xs font-medium text-brand-600 dark:text-brand-300">
                     {charger.status} · {formatKw(charger.powerKilowatts)} kW
                   </p>

@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
-import PageBreadcrumb from "../components/common/PageBreadCrumb";
-import PageMeta from "../components/common/PageMeta";
-import { fetchChargers, createCharger, runChargerAction } from "../api";
-import { Charger, ChargerStatus, ChargerAction, CreateChargerPayload } from "../types";
-import LocationPicker from "../components/map/LocationPicker";
-import AddressAutocomplete from "../components/map/AddressAutocomplete";
+import { useEffect, useState } from 'react';
+import PageBreadcrumb from '../components/common/PageBreadCrumb';
+import PageMeta from '../components/common/PageMeta';
+import { fetchChargers, createCharger, runChargerAction } from '../api';
+import { Charger, ChargerStatus, ChargerAction, CreateChargerPayload } from '../types';
+import LocationPicker from '../components/map/LocationPicker';
+import AddressAutocomplete from '../components/map/AddressAutocomplete';
 
 export default function Chargers() {
   const [chargers, setChargers] = useState<Charger[]>([]);
@@ -12,8 +12,8 @@ export default function Chargers() {
   const [error, setError] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newCharger, setNewCharger] = useState<CreateChargerPayload>({
-    name: "",
-    address: "",
+    name: '',
+    address: '',
     latitude: 0,
     longitude: 0,
     powerKilowatts: 22,
@@ -30,8 +30,8 @@ export default function Chargers() {
       const data = await fetchChargers();
       setChargers(data);
       setError(null);
-    } catch (err: any) {
-      setError(err.message || "Error al cargar cargadores");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Error al cargar cargadores');
     } finally {
       setLoading(false);
     }
@@ -41,11 +41,11 @@ export default function Chargers() {
     e.preventDefault();
     try {
       await createCharger(newCharger);
-      setNewCharger({ name: "", address: "", latitude: 0, longitude: 0, powerKilowatts: 22 });
+      setNewCharger({ name: '', address: '', latitude: 0, longitude: 0, powerKilowatts: 22 });
       setShowCreateForm(false);
       await loadChargers();
-    } catch (err: any) {
-      setError(err.message || "Error al crear cargador");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Error al crear cargador');
     }
   };
 
@@ -53,16 +53,16 @@ export default function Chargers() {
     try {
       await runChargerAction(chargerId, action);
       await loadChargers();
-    } catch (err: any) {
-      setError(err.message || `Error al ejecutar ${action}`);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : `Error al ejecutar ${action}`);
     }
   };
 
   const getStatusBadge = (status: ChargerStatus) => {
     const colors: Record<ChargerStatus, string> = {
-      AVAILABLE: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-      CHARGING: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
-      OUT_OF_SERVICE: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+      AVAILABLE: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
+      CHARGING: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+      OUT_OF_SERVICE: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
     };
     return (
       <span className={`px-2.5 py-0.5 rounded text-xs font-medium ${colors[status]}`}>
@@ -110,7 +110,9 @@ export default function Chargers() {
 
       {showCreateForm && (
         <div className="mb-6 p-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg shadow-theme-xs">
-          <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Crear Nuevo Cargador</h3>
+          <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+            Crear Nuevo Cargador
+          </h3>
           <form onSubmit={handleCreateCharger} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -124,26 +126,24 @@ export default function Chargers() {
                 required
               />
             </div>
-            
+
             <AddressAutocomplete
               value={newCharger.address}
               onChange={(address) => setNewCharger((prev) => ({ ...prev, address }))}
-              onSelect={(address, lat, lon) => 
+              onSelect={(address, lat, lon) =>
                 setNewCharger((prev) => ({ ...prev, address, latitude: lat, longitude: lon }))
               }
               required
             />
-            
+
             <LocationPicker
               address={newCharger.address}
               latitude={newCharger.latitude}
               longitude={newCharger.longitude}
-              onLocationChange={(lat, lng) => 
+              onLocationChange={(lat, lng) =>
                 setNewCharger((prev) => ({ ...prev, latitude: lat, longitude: lng }))
               }
-              onAddressChange={(address) =>
-                setNewCharger((prev) => ({ ...prev, address }))
-              }
+              onAddressChange={(address) => setNewCharger((prev) => ({ ...prev, address }))}
             />
 
             <div>
@@ -153,7 +153,9 @@ export default function Chargers() {
               <input
                 type="number"
                 value={newCharger.powerKilowatts}
-                onChange={(e) => setNewCharger((prev) => ({ ...prev, powerKilowatts: Number(e.target.value) }))}
+                onChange={(e) =>
+                  setNewCharger((prev) => ({ ...prev, powerKilowatts: Number(e.target.value) }))
+                }
                 className="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-white dark:focus:border-brand-800"
                 min="1"
                 required
@@ -183,18 +185,33 @@ export default function Chargers() {
           <table className="w-full text-sm text-left">
             <thead className="text-xs uppercase bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-400">
               <tr>
-                <th scope="col" className="px-6 py-3">ID</th>
-                <th scope="col" className="px-6 py-3">Nombre</th>
-                <th scope="col" className="px-6 py-3">Dirección</th>
-                <th scope="col" className="px-6 py-3">Potencia</th>
-                <th scope="col" className="px-6 py-3">Estado</th>
-                <th scope="col" className="px-6 py-3">Acciones</th>
+                <th scope="col" className="px-6 py-3">
+                  ID
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Nombre
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Dirección
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Potencia
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Estado
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Acciones
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
               {chargers.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                  <td
+                    colSpan={6}
+                    className="px-6 py-8 text-center text-gray-500 dark:text-gray-400"
+                  >
                     No hay cargadores registrados
                   </td>
                 </tr>
@@ -204,47 +221,43 @@ export default function Chargers() {
                     <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
                       {charger.id}
                     </td>
-                    <td className="px-6 py-4 text-gray-700 dark:text-gray-300">
-                      {charger.name}
-                    </td>
+                    <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{charger.name}</td>
                     <td className="px-6 py-4 text-gray-700 dark:text-gray-300">
                       {charger.address}
                     </td>
                     <td className="px-6 py-4 text-gray-700 dark:text-gray-300">
                       {charger.powerKilowatts} kW
                     </td>
-                    <td className="px-6 py-4">
-                      {getStatusBadge(charger.status)}
-                    </td>
+                    <td className="px-6 py-4">{getStatusBadge(charger.status)}</td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
-                        {charger.status === "OUT_OF_SERVICE" && (
+                        {charger.status === 'OUT_OF_SERVICE' && (
                           <button
-                            onClick={() => handleAction(charger.id, "activate")}
+                            onClick={() => handleAction(charger.id, 'activate')}
                             className="px-3 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
                           >
                             Activar
                           </button>
                         )}
-                        {charger.status === "AVAILABLE" && (
+                        {charger.status === 'AVAILABLE' && (
                           <>
                             <button
-                              onClick={() => handleAction(charger.id, "deactivate")}
+                              onClick={() => handleAction(charger.id, 'deactivate')}
                               className="px-3 py-1 text-xs bg-orange-500 text-white rounded hover:bg-orange-600"
                             >
                               Desactivar
                             </button>
                             <button
-                              onClick={() => handleAction(charger.id, "start-charging")}
+                              onClick={() => handleAction(charger.id, 'start-charging')}
                               className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
                             >
                               Iniciar Carga
                             </button>
                           </>
                         )}
-                        {charger.status === "CHARGING" && (
+                        {charger.status === 'CHARGING' && (
                           <button
-                            onClick={() => handleAction(charger.id, "stop-charging")}
+                            onClick={() => handleAction(charger.id, 'stop-charging')}
                             className="px-3 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
                           >
                             Detener Carga

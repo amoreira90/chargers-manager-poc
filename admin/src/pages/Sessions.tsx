@@ -1,5 +1,5 @@
-import PageBreadcrumb from "../components/common/PageBreadCrumb";
-import PageMeta from "../components/common/PageMeta";
+import PageBreadcrumb from '../components/common/PageBreadCrumb';
+import PageMeta from '../components/common/PageMeta';
 
 export default function Sessions() {
   return (
@@ -9,7 +9,7 @@ export default function Sessions() {
         description="Historial de sesiones de carga"
       />
       <PageBreadcrumb pageTitle="Sesiones" />
-      
+
       <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg shadow-theme-xs p-8">
         <div className="text-center">
           <svg

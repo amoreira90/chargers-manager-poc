@@ -1,15 +1,12 @@
-import PageBreadcrumb from "../components/common/PageBreadCrumb";
-import PageMeta from "../components/common/PageMeta";
+import PageBreadcrumb from '../components/common/PageBreadCrumb';
+import PageMeta from '../components/common/PageMeta';
 
 export default function Settings() {
   return (
     <>
-      <PageMeta
-        title="Configuración | EVSE Admin"
-        description="Configuración del sistema"
-      />
+      <PageMeta title="Configuración | EVSE Admin" description="Configuración del sistema" />
       <PageBreadcrumb pageTitle="Configuración" />
-      
+
       <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg shadow-theme-xs p-8">
         <div className="text-center">
           <svg
