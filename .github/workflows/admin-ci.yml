@@ -3,9 +3,6 @@ name: Admin CI
 on:
   pull_request:
     branches: [develop, master]
-    paths:
-      - 'admin/**'
-      - '.github/workflows/admin-ci.yml'
 
 jobs:
   lint-and-check:
@@ -15,8 +12,22 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for admin changes
+        id: changes
+        run: |
+          CHANGED=$(git diff --name-only ${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }} \
+            | grep -E '^(admin/|\.github/workflows/admin-ci\.yml)' || true)
+          if [ -z "$CHANGED" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Set up Node.js
+        if: steps.changes.outputs.skip == 'false'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -24,13 +35,16 @@ jobs:
           cache-dependency-path: admin/package-lock.json
 
       - name: Install dependencies
+        if: steps.changes.outputs.skip == 'false'
         working-directory: admin
         run: npm ci
 
       - name: Lint
+        if: steps.changes.outputs.skip == 'false'
         working-directory: admin
         run: npm run lint
 
       - name: Type check
+        if: steps.changes.outputs.skip == 'false'
         working-directory: admin
         run: npx tsc -b --noEmit
