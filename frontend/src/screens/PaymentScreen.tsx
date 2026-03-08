@@ -1,18 +1,18 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { CommonActions } from "@react-navigation/native";
-import React, { useState } from "react";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { CommonActions } from '@react-navigation/native';
+import React, { useState } from 'react';
 import {
-    ActivityIndicator,
-    Animated,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "../context/ThemeContext";
+  ActivityIndicator,
+  Animated,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTheme } from '../context/ThemeContext';
 
 const PaymentScreen = ({ route, navigation }: any) => {
   const insets = useSafeAreaInsets();
@@ -22,15 +22,13 @@ const PaymentScreen = ({ route, navigation }: any) => {
   const [loading, setLoading] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(
     // Si viene con pre-auth capturado, ya está pagado
-    preAuth?.status === "captured",
+    preAuth?.status === 'captured',
   );
-  const [scaleAnim] = useState(
-    new Animated.Value(preAuth?.status === "captured" ? 1 : 0),
-  );
+  const [scaleAnim] = useState(new Animated.Value(preAuth?.status === 'captured' ? 1 : 0));
 
   // Si viene con pre-auth capturado, animar entrada
   React.useEffect(() => {
-    if (preAuth?.status === "captured") {
+    if (preAuth?.status === 'captured') {
       Animated.spring(scaleAnim, {
         toValue: 1,
         friction: 4,
@@ -42,28 +40,28 @@ const PaymentScreen = ({ route, navigation }: any) => {
 
   const paymentMethods = [
     {
-      id: "mercadopago",
-      name: "Mercado Pago",
-      icon: "credit-card",
-      color: "#009EE3",
+      id: 'mercadopago',
+      name: 'Mercado Pago',
+      icon: 'credit-card',
+      color: '#009EE3',
     },
-    ...(Platform.OS === "android"
+    ...(Platform.OS === 'android'
       ? [
           {
-            id: "google_pay",
-            name: "Google Pay",
-            icon: "google",
-            color: "#4285F4",
+            id: 'google_pay',
+            name: 'Google Pay',
+            icon: 'google',
+            color: '#4285F4',
           },
         ]
       : []),
-    ...(Platform.OS === "ios"
+    ...(Platform.OS === 'ios'
       ? [
           {
-            id: "apple_pay",
-            name: "Apple Pay",
-            icon: "apple",
-            color: "#000",
+            id: 'apple_pay',
+            name: 'Apple Pay',
+            icon: 'apple',
+            color: '#000',
           },
         ]
       : []),
@@ -73,7 +71,7 @@ const PaymentScreen = ({ route, navigation }: any) => {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
-        routes: [{ name: "HomeScreen" }],
+        routes: [{ name: 'HomeScreen' }],
       }),
     );
   };
@@ -114,20 +112,18 @@ const PaymentScreen = ({ route, navigation }: any) => {
           },
         ]}
       >
-        <Animated.View
-          style={[styles.successCircle, { transform: [{ scale: scaleAnim }] }]}
-        >
+        <Animated.View style={[styles.successCircle, { transform: [{ scale: scaleAnim }] }]}>
           <MaterialCommunityIcons name="check" size={64} color="#fff" />
         </Animated.View>
         <Text style={[styles.successTitle, { color: colors.text }]}>
-          {preAuth ? "¡Cobro Realizado!" : "¡Pago Exitoso!"}
+          {preAuth ? '¡Cobro Realizado!' : '¡Pago Exitoso!'}
         </Text>
         <Text style={styles.successAmount}>${amount.toFixed(2)}</Text>
         <Text style={[styles.successSubtitle, { color: colors.textSecondary }]}>
           Cargador: {sessionData.chargerName}
         </Text>
         <Text style={[styles.successDetail, { color: colors.textTertiary }]}>
-          Energía: {sessionData.energyDelivered.toFixed(2)} kWh • Tiempo:{" "}
+          Energía: {sessionData.energyDelivered.toFixed(2)} kWh • Tiempo:{' '}
           {Math.floor(sessionData.sessionTime / 60)} min
         </Text>
         {preAuth && (
@@ -139,30 +135,24 @@ const PaymentScreen = ({ route, navigation }: any) => {
               Monto cobrado: ${preAuth.capturedAmount.toFixed(2)}
             </Text>
             {preAuth.authorizedAmount > preAuth.capturedAmount && (
-              <Text style={[styles.receiptLine, { color: "#4CAF50" }]}>
-                Liberado: $
-                {(preAuth.authorizedAmount - preAuth.capturedAmount).toFixed(2)}
+              <Text style={[styles.receiptLine, { color: '#4CAF50' }]}>
+                Liberado: ${(preAuth.authorizedAmount - preAuth.capturedAmount).toFixed(2)}
               </Text>
             )}
             <Text style={[styles.receiptLine, { color: colors.textTertiary }]}>
-              Método:{" "}
-              {preAuth.paymentMethod === "mercadopago"
-                ? "Mercado Pago"
-                : preAuth.paymentMethod === "google_pay"
-                  ? "Google Pay"
-                  : "Apple Pay"}
+              Método:{' '}
+              {preAuth.paymentMethod === 'mercadopago'
+                ? 'Mercado Pago'
+                : preAuth.paymentMethod === 'google_pay'
+                  ? 'Google Pay'
+                  : 'Apple Pay'}
             </Text>
           </View>
         )}
 
         <View style={styles.successActions}>
           <TouchableOpacity style={styles.successButton} onPress={goToHome}>
-            <MaterialCommunityIcons
-              name="home"
-              size={20}
-              color="#fff"
-              style={{ marginRight: 8 }}
-            />
+            <MaterialCommunityIcons name="home" size={20} color="#fff" style={{ marginRight: 8 }} />
             <Text style={styles.successButtonText}>Volver al Inicio</Text>
           </TouchableOpacity>
         </View>
@@ -186,55 +176,28 @@ const PaymentScreen = ({ route, navigation }: any) => {
         ]}
       >
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <MaterialCommunityIcons
-            name="arrow-left"
-            size={24}
-            color={colors.text}
-          />
+          <MaterialCommunityIcons name="arrow-left" size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>
-          Pago de Carga
-        </Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Pago de Carga</Text>
         <View style={{ width: 24 }} />
       </View>
 
       <View style={styles.content}>
         {/* Summary */}
         <View
-          style={[
-            styles.summaryCard,
-            { backgroundColor: colors.card, shadowColor: colors.shadow },
-          ]}
+          style={[styles.summaryCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}
         >
-          <Text style={[styles.summaryTitle, { color: colors.text }]}>
-            Resumen de Carga
-          </Text>
+          <Text style={[styles.summaryTitle, { color: colors.text }]}>Resumen de Carga</Text>
 
-          <View
-            style={[
-              styles.summaryRow,
-              { borderBottomColor: colors.borderLight },
-            ]}
-          >
-            <Text
-              style={[styles.summaryLabel, { color: colors.textSecondary }]}
-            >
-              Cargador
-            </Text>
+          <View style={[styles.summaryRow, { borderBottomColor: colors.borderLight }]}>
+            <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Cargador</Text>
             <Text style={[styles.summaryValue, { color: colors.text }]}>
               {sessionData.chargerName}
             </Text>
           </View>
 
-          <View
-            style={[
-              styles.summaryRow,
-              { borderBottomColor: colors.borderLight },
-            ]}
-          >
-            <Text
-              style={[styles.summaryLabel, { color: colors.textSecondary }]}
-            >
+          <View style={[styles.summaryRow, { borderBottomColor: colors.borderLight }]}>
+            <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>
               Energía Entregada
             </Text>
             <Text style={[styles.summaryValue, { color: colors.text }]}>
@@ -242,15 +205,8 @@ const PaymentScreen = ({ route, navigation }: any) => {
             </Text>
           </View>
 
-          <View
-            style={[
-              styles.summaryRow,
-              { borderBottomColor: colors.borderLight },
-            ]}
-          >
-            <Text
-              style={[styles.summaryLabel, { color: colors.textSecondary }]}
-            >
+          <View style={[styles.summaryRow, { borderBottomColor: colors.borderLight }]}>
+            <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>
               Tiempo de Carga
             </Text>
             <Text style={[styles.summaryValue, { color: colors.text }]}>
@@ -262,20 +218,16 @@ const PaymentScreen = ({ route, navigation }: any) => {
             style={[
               styles.summaryRow,
               styles.totalRow,
-              { backgroundColor: isDark ? colors.surface : "#f9f9f9" },
+              { backgroundColor: isDark ? colors.surface : '#f9f9f9' },
             ]}
           >
-            <Text style={[styles.totalLabel, { color: colors.text }]}>
-              Total a Pagar
-            </Text>
+            <Text style={[styles.totalLabel, { color: colors.text }]}>Total a Pagar</Text>
             <Text style={styles.totalValue}>${amount.toFixed(2)}</Text>
           </View>
         </View>
 
         {/* Payment Methods */}
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>
-          Método de Pago
-        </Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Método de Pago</Text>
 
         {paymentMethods.map((method) => (
           <TouchableOpacity
@@ -288,51 +240,27 @@ const PaymentScreen = ({ route, navigation }: any) => {
                 shadowColor: colors.shadow,
               },
               selectedMethod === method.id && {
-                borderColor: "#4CAF50",
-                backgroundColor: isDark ? "#1a2e1a" : "#f0f8f5",
+                borderColor: '#4CAF50',
+                backgroundColor: isDark ? '#1a2e1a' : '#f0f8f5',
               },
             ]}
             onPress={() => setSelectedMethod(method.id)}
           >
             <View style={styles.paymentMethodContent}>
-              <View
-                style={[
-                  styles.paymentMethodIcon,
-                  { backgroundColor: method.color },
-                ]}
-              >
-                <MaterialCommunityIcons
-                  name={method.icon}
-                  size={24}
-                  color="#fff"
-                />
+              <View style={[styles.paymentMethodIcon, { backgroundColor: method.color }]}>
+                <MaterialCommunityIcons name={method.icon} size={24} color="#fff" />
               </View>
-              <Text style={[styles.paymentMethodName, { color: colors.text }]}>
-                {method.name}
-              </Text>
+              <Text style={[styles.paymentMethodName, { color: colors.text }]}>{method.name}</Text>
             </View>
             {selectedMethod === method.id && (
-              <MaterialCommunityIcons
-                name="check-circle"
-                size={24}
-                color="#4CAF50"
-              />
+              <MaterialCommunityIcons name="check-circle" size={24} color="#4CAF50" />
             )}
           </TouchableOpacity>
         ))}
 
         {/* Security Notice */}
-        <View
-          style={[
-            styles.securityNotice,
-            { backgroundColor: isDark ? "#1a2e1a" : "#f0f8f5" },
-          ]}
-        >
-          <MaterialCommunityIcons
-            name="shield-check"
-            size={16}
-            color="#4CAF50"
-          />
+        <View style={[styles.securityNotice, { backgroundColor: isDark ? '#1a2e1a' : '#f0f8f5' }]}>
+          <MaterialCommunityIcons name="shield-check" size={16} color="#4CAF50" />
           <Text style={styles.securityText}>
             Tu información de pago está protegida por encriptación SSL
           </Text>
@@ -340,10 +268,7 @@ const PaymentScreen = ({ route, navigation }: any) => {
 
         {/* Payment Button */}
         <TouchableOpacity
-          style={[
-            styles.payButton,
-            !selectedMethod && styles.payButtonDisabled,
-          ]}
+          style={[styles.payButton, !selectedMethod && styles.payButtonDisabled]}
           onPress={handlePayment}
           disabled={loading || !selectedMethod}
         >
@@ -357,9 +282,7 @@ const PaymentScreen = ({ route, navigation }: any) => {
                 color="#fff"
                 style={{ marginRight: 8 }}
               />
-              <Text style={styles.payButtonText}>
-                Realizar Pago ${amount.toFixed(2)}
-              </Text>
+              <Text style={styles.payButtonText}>Realizar Pago ${amount.toFixed(2)}</Text>
             </>
           )}
         </TouchableOpacity>
@@ -373,32 +296,32 @@ const PaymentScreen = ({ route, navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: '#f5f5f5',
   },
   header: {
-    backgroundColor: "#fff",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
+    borderBottomColor: '#e0e0e0',
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
+    fontWeight: 'bold',
+    color: '#333',
   },
   content: {
     padding: 16,
   },
   summaryCard: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
     marginBottom: 24,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -406,92 +329,92 @@ const styles = StyleSheet.create({
   },
   summaryTitle: {
     fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
+    fontWeight: 'bold',
+    color: '#333',
     marginBottom: 12,
   },
   summaryRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
+    borderBottomColor: '#f0f0f0',
   },
   summaryLabel: {
     fontSize: 14,
-    color: "#666",
+    color: '#666',
   },
   summaryValue: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#333",
+    fontWeight: '600',
+    color: '#333',
   },
   totalRow: {
     borderBottomWidth: 0,
     paddingVertical: 12,
     marginTop: 8,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: '#f9f9f9',
     paddingHorizontal: 8,
     borderRadius: 8,
   },
   totalLabel: {
     fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
+    fontWeight: 'bold',
+    color: '#333',
   },
   totalValue: {
     fontSize: 16,
-    fontWeight: "bold",
-    color: "#4CAF50",
+    fontWeight: 'bold',
+    color: '#4CAF50',
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
+    fontWeight: 'bold',
+    color: '#333',
     marginBottom: 12,
   },
   paymentMethodCard: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     borderWidth: 2,
-    borderColor: "#e0e0e0",
-    shadowColor: "#000",
+    borderColor: '#e0e0e0',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
   selectedPaymentMethod: {
-    borderColor: "#4CAF50",
-    backgroundColor: "#f0f8f5",
+    borderColor: '#4CAF50',
+    backgroundColor: '#f0f8f5',
   },
   paymentMethodContent: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     flex: 1,
   },
   paymentMethodIcon: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 12,
   },
   paymentMethodName: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#333",
+    fontWeight: '600',
+    color: '#333',
   },
   securityNotice: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#f0f8f5",
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0f8f5',
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -500,14 +423,14 @@ const styles = StyleSheet.create({
   securityText: {
     marginLeft: 8,
     fontSize: 12,
-    color: "#2e7d32",
+    color: '#2e7d32',
     flex: 1,
   },
   payButton: {
-    backgroundColor: "#4CAF50",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#4CAF50',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 14,
     borderRadius: 8,
   },
@@ -515,9 +438,9 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   payButtonText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   spacer: {
     height: 20,
@@ -525,20 +448,20 @@ const styles = StyleSheet.create({
   // Success screen styles
   successContainer: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#f5f5f5',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 32,
   },
   successCircle: {
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: "#4CAF50",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#4CAF50',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 24,
-    shadowColor: "#4CAF50",
+    shadowColor: '#4CAF50',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -546,59 +469,59 @@ const styles = StyleSheet.create({
   },
   successTitle: {
     fontSize: 28,
-    fontWeight: "bold",
-    color: "#333",
+    fontWeight: 'bold',
+    color: '#333',
     marginBottom: 8,
   },
   successAmount: {
     fontSize: 36,
-    fontWeight: "bold",
-    color: "#4CAF50",
+    fontWeight: 'bold',
+    color: '#4CAF50',
     marginBottom: 16,
   },
   successSubtitle: {
     fontSize: 16,
-    color: "#666",
+    color: '#666',
     marginBottom: 4,
   },
   successDetail: {
     fontSize: 14,
-    color: "#999",
+    color: '#999',
     marginBottom: 16,
-    textAlign: "center",
+    textAlign: 'center',
   },
   preAuthReceipt: {
-    backgroundColor: "#f5f5f5",
+    backgroundColor: '#f5f5f5',
     borderRadius: 12,
     padding: 16,
     marginBottom: 24,
-    width: "100%",
-    alignItems: "center",
+    width: '100%',
+    alignItems: 'center',
   },
   receiptLine: {
     fontSize: 14,
     marginVertical: 2,
   },
   successActions: {
-    width: "100%",
+    width: '100%',
   },
   successButton: {
-    backgroundColor: "#1E90FF",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#1E90FF',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 16,
     borderRadius: 12,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
     elevation: 4,
   },
   successButtonText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
 });
 

@@ -253,7 +253,7 @@ Asegúrate que tu backend tenga habilitado CORS:
 // Express ejemplo
 app.use(
   cors({
-    origin: "*", // En desarrollo
+    origin: '*', // En desarrollo
     credentials: true,
   }),
 );

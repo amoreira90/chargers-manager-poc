@@ -1,43 +1,53 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import * as Location from "expo-location";
-import React, { useEffect, useRef, useState } from "react";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as Location from 'expo-location';
+import React, { useEffect, useRef, useState } from 'react';
 import {
+  ActionSheetIOS,
   ActivityIndicator,
   Alert,
+  Linking,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-} from "react-native";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { chargerService } from "../api";
-import { useTheme } from "../context/ThemeContext";
-import { ChargerStation } from "../types";
+} from 'react-native';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { chargerService } from '../api';
+import { useTheme } from '../context/ThemeContext';
+import { ChargerStation } from '../types';
+
+/** Haversine distance in km between two coordinates */
+const getDistanceKm = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+  const toRad = (v: number) => (v * Math.PI) / 180;
+  const R = 6371;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+};
 
 const MapScreen = ({ navigation, route }: any) => {
   const insets = useSafeAreaInsets();
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const cameraRef = useRef<any>(null);
   const [location, setLocation] = useState<any>(null);
   const [chargers, setChargers] = useState<ChargerStation[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCharger, setSelectedCharger] = useState<ChargerStation | null>(
-    null,
-  );
+  const [selectedCharger, setSelectedCharger] = useState<ChargerStation | null>(null);
 
   const requestLocationPermission = async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status === "granted") {
+      if (status === 'granted') {
         const currentLocation = await Location.getCurrentPositionAsync({});
         setLocation(currentLocation);
         loadChargers();
       } else {
-        Alert.alert(
-          "Permiso",
-          "Se requiere acceso a ubicación para usar el mapa",
-        );
+        Alert.alert('Permiso', 'Se requiere acceso a ubicación para usar el mapa');
         // Usar ubicación por defecto (Montevideo)
         setLocation({
           coords: {
@@ -71,7 +81,7 @@ const MapScreen = ({ navigation, route }: any) => {
       setChargers(data);
       setLoading(false);
     } catch {
-      Alert.alert("Error", "No se pudieron cargar los cargadores");
+      Alert.alert('Error', 'No se pudieron cargar los cargadores');
       setLoading(false);
     }
   };
@@ -82,10 +92,73 @@ const MapScreen = ({ navigation, route }: any) => {
 
   const handleStartCharging = () => {
     if (selectedCharger) {
-      navigation.navigate("ChargingDetail", {
+      navigation.navigate('ChargingDetail', {
         charger: selectedCharger,
       });
     }
+  };
+
+  const getDistanceText = (charger: ChargerStation): string | null => {
+    if (!location) return null;
+    const km = getDistanceKm(
+      location.coords.latitude,
+      location.coords.longitude,
+      charger.location.latitude,
+      charger.location.longitude,
+    );
+    return km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`;
+  };
+
+  const handleNavigateTo = (charger: ChargerStation) => {
+    const { latitude, longitude } = charger.location;
+    const label = encodeURIComponent(charger.name);
+
+    const appleMapsUrl = `maps://?daddr=${latitude},${longitude}&q=${label}`;
+    const googleMapsUrl = `comgooglemaps://?daddr=${latitude},${longitude}&directionsmode=driving`;
+    const wazeUrl = `waze://?ll=${latitude},${longitude}&navigate=yes`;
+
+    type NavOption = { name: string; url: string };
+
+    const checkApps = async (): Promise<NavOption[]> => {
+      const apps: NavOption[] = [];
+      if (await Linking.canOpenURL(appleMapsUrl))
+        apps.push({ name: 'Apple Maps', url: appleMapsUrl });
+      if (await Linking.canOpenURL(googleMapsUrl))
+        apps.push({ name: 'Google Maps', url: googleMapsUrl });
+      if (await Linking.canOpenURL(wazeUrl)) apps.push({ name: 'Waze', url: wazeUrl });
+      return apps;
+    };
+
+    checkApps().then((apps) => {
+      if (apps.length === 0) {
+        // Fallback: abrir en navegador
+        Linking.openURL(
+          `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`,
+        );
+        return;
+      }
+      if (apps.length === 1) {
+        Linking.openURL(apps[0].url);
+        return;
+      }
+      if (Platform.OS === 'ios') {
+        ActionSheetIOS.showActionSheetWithOptions(
+          {
+            options: [...apps.map((a) => a.name), 'Cancelar'],
+            cancelButtonIndex: apps.length,
+            title: 'Abrir con...',
+          },
+          (index) => {
+            if (index < apps.length) Linking.openURL(apps[index].url);
+          },
+        );
+      } else {
+        Alert.alert('Abrir con...', undefined, [
+          ...apps.map((a) => ({ text: a.name, onPress: () => Linking.openURL(a.url) })),
+          { text: 'Cancelar', style: 'cancel' as const },
+        ]);
+      }
+    });
   };
 
   if (loading) {
@@ -144,11 +217,11 @@ const MapScreen = ({ navigation, route }: any) => {
         {/* Markers de cargadores */}
         {chargers.map((charger) => {
           const statusText =
-            charger.availability === "available"
-              ? "Disponible"
-              : charger.availability === "charging"
-                ? "En carga"
-                : "Mantenimiento";
+            charger.availability === 'available'
+              ? 'Disponible'
+              : charger.availability === 'charging'
+                ? 'En carga'
+                : 'Mantenimiento';
 
           return (
             <Marker
@@ -160,11 +233,11 @@ const MapScreen = ({ navigation, route }: any) => {
               title={charger.name}
               description={`${statusText} • ${charger.powerOutput}kW ${charger.connectorType}\n$${charger.pricePerKwh}/kWh`}
               pinColor={
-                charger.availability === "available"
-                  ? "#4CAF50"
-                  : charger.availability === "charging"
-                    ? "#FF9800"
-                    : "#f44336"
+                charger.availability === 'available'
+                  ? '#4CAF50'
+                  : charger.availability === 'charging'
+                    ? '#FF9800'
+                    : '#f44336'
               }
               onPress={() => handleChargerPress(charger)}
             />
@@ -194,11 +267,7 @@ const MapScreen = ({ navigation, route }: any) => {
           }
         }}
       >
-        <MaterialCommunityIcons
-          name="crosshairs-gps"
-          size={24}
-          color={colors.primary}
-        />
+        <MaterialCommunityIcons name="crosshairs-gps" size={24} color={colors.primary} />
       </TouchableOpacity>
 
       {selectedCharger && (
@@ -222,72 +291,79 @@ const MapScreen = ({ navigation, route }: any) => {
                   styles.statusBadge,
                   {
                     backgroundColor:
-                      selectedCharger.availability === "available"
-                        ? "#4CAF50"
-                        : selectedCharger.availability === "charging"
-                          ? "#FF9800"
-                          : "#f44336",
+                      selectedCharger.availability === 'available'
+                        ? '#4CAF50'
+                        : selectedCharger.availability === 'charging'
+                          ? '#FF9800'
+                          : '#f44336',
                   },
                 ]}
               >
                 <Text style={styles.statusText}>
-                  {selectedCharger.availability === "available"
-                    ? "Disponible"
-                    : selectedCharger.availability === "charging"
-                      ? "En carga"
-                      : "Mantenimiento"}
+                  {selectedCharger.availability === 'available'
+                    ? 'Disponible'
+                    : selectedCharger.availability === 'charging'
+                      ? 'En carga'
+                      : 'Mantenimiento'}
                 </Text>
               </View>
             </View>
-            <Text
-              style={[styles.selectedAddress, { color: colors.textSecondary }]}
-            >
-              {selectedCharger.location.address}
-            </Text>
+            <View style={styles.addressRow}>
+              <Text style={[styles.selectedAddress, { color: colors.textSecondary, flex: 1 }]}>
+                {selectedCharger.location.address}
+              </Text>
+              {getDistanceText(selectedCharger) && (
+                <View style={styles.distanceBadge}>
+                  <MaterialCommunityIcons
+                    name="map-marker-distance"
+                    size={14}
+                    color={colors.primary}
+                  />
+                  <Text style={[styles.distanceText, { color: colors.primary }]}>
+                    {getDistanceText(selectedCharger)}
+                  </Text>
+                </View>
+              )}
+            </View>
             <View style={styles.selectedStats}>
               <View style={styles.statRow}>
-                <Text
-                  style={[styles.statLabel, { color: colors.textSecondary }]}
-                >
-                  Potencia:
-                </Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Potencia:</Text>
                 <Text style={[styles.statValue, { color: colors.text }]}>
                   {selectedCharger.powerOutput} kW
                 </Text>
               </View>
               <View style={styles.statRow}>
-                <Text
-                  style={[styles.statLabel, { color: colors.textSecondary }]}
-                >
-                  Conector:
-                </Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Conector:</Text>
                 <Text style={[styles.statValue, { color: colors.text }]}>
                   {selectedCharger.connectorType}
                 </Text>
               </View>
               <View style={styles.statRow}>
-                <Text
-                  style={[styles.statLabel, { color: colors.textSecondary }]}
-                >
-                  Precio:
-                </Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Precio:</Text>
                 <Text style={[styles.statValue, { color: colors.text }]}>
                   ${selectedCharger.pricePerKwh}/kWh
                 </Text>
               </View>
             </View>
           </View>
-          <TouchableOpacity
-            style={styles.scanButton}
-            onPress={handleStartCharging}
-          >
-            <MaterialCommunityIcons
-              name="lightning-bolt"
-              size={24}
-              color="#fff"
-            />
-            <Text style={styles.scanButtonText}>Iniciar Carga</Text>
-          </TouchableOpacity>
+          <View style={styles.actionButtons}>
+            <TouchableOpacity
+              style={[styles.directionsButton, { borderColor: colors.primary }]}
+              onPress={() => handleNavigateTo(selectedCharger)}
+            >
+              <MaterialCommunityIcons name="directions" size={22} color={colors.primary} />
+              <Text style={[styles.directionsButtonText, { color: colors.primary }]}>
+                Cómo llegar
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.scanButton, { flex: 1 }]}
+              onPress={handleStartCharging}
+            >
+              <MaterialCommunityIcons name="lightning-bolt" size={24} color="#fff" />
+              <Text style={styles.scanButtonText}>Iniciar Carga</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
     </View>
@@ -297,20 +373,20 @@ const MapScreen = ({ navigation, route }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   map: {
     flex: 1,
   },
   bottomCard: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 20,
     left: 16,
     right: 16,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 16,
     padding: 16,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
@@ -320,15 +396,15 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   headerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 8,
   },
   selectedName: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#000",
+    fontWeight: 'bold',
+    color: '#000',
     flex: 1,
   },
   statusBadge: {
@@ -338,52 +414,84 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   statusText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 12,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   selectedAddress: {
     fontSize: 13,
-    color: "#666",
-    marginBottom: 12,
+    color: '#666',
   },
   selectedStats: {
     gap: 8,
   },
   statRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   statLabel: {
     fontSize: 13,
-    color: "#666",
-    fontWeight: "500",
+    color: '#666',
+    fontWeight: '500',
   },
   statValue: {
     fontSize: 13,
-    color: "#000",
-    fontWeight: "600",
+    color: '#000',
+    fontWeight: '600',
+  },
+  addressRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+    gap: 8,
+  },
+  distanceBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  distanceText: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  directionsButton: {
+    flexDirection: 'row',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 6,
+    borderWidth: 1.5,
+  },
+  directionsButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
   },
   scanButton: {
-    flexDirection: "row",
-    backgroundColor: "#1E90FF",
+    flexDirection: 'row',
+    backgroundColor: '#1E90FF',
     paddingVertical: 12,
     borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: 8,
   },
   scanButtonText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   centerLocationButton: {
-    position: "absolute",
-    backgroundColor: "#fff",
+    position: 'absolute',
+    backgroundColor: '#fff',
     padding: 12,
     borderRadius: 24,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 8,

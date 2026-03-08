@@ -10,7 +10,10 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.proseapp.app"
+      "bundleIdentifier": "com.proseapp.app",
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": ["comgooglemaps", "waze", "maps"]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -18,7 +21,10 @@
         "foregroundImage": "./assets/images/android-icon-foreground.png"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.proseapp.app"
+      "package": "com.proseapp.app",
+      "queries": {
+        "schemes": ["comgooglemaps", "waze", "geo"]
+      }
     },
     "web": {
       "output": "static",
