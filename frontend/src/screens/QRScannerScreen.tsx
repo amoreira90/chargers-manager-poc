@@ -1,16 +1,9 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { CameraView, useCameraPermissions } from "expo-camera";
-import React, { useEffect, useRef, useState } from "react";
-import {
-    Alert,
-    Dimensions,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get('window');
 const QR_SIZE = width * 0.7;
 
 const QRScannerScreen = ({ navigation, route }: any) => {
@@ -33,7 +26,7 @@ const QRScannerScreen = ({ navigation, route }: any) => {
 
   // Limpiar estado cuando se va
   useEffect(() => {
-    const unsubscribe = navigation.addListener("beforeRemove", () => {
+    const unsubscribe = navigation.addListener('beforeRemove', () => {
       scannedRef.current = false;
       setScanned(false);
     });
@@ -53,16 +46,10 @@ const QRScannerScreen = ({ navigation, route }: any) => {
     return (
       <View style={styles.container}>
         <View style={styles.contentContainer}>
-          <MaterialCommunityIcons
-            name="camera"
-            size={64}
-            color="#1E90FF"
-            style={styles.icon}
-          />
+          <MaterialCommunityIcons name="camera" size={64} color="#1E90FF" style={styles.icon} />
           <Text style={styles.title}>Permiso de Cámara Requerido</Text>
           <Text style={styles.description}>
-            Necesitamos acceso a tu cámara para escanear códigos QR en
-            cargadores.
+            Necesitamos acceso a tu cámara para escanear códigos QR en cargadores.
           </Text>
           <TouchableOpacity style={styles.button} onPress={requestPermission}>
             <Text style={styles.buttonText}>Otorgar Permiso</Text>
@@ -79,8 +66,8 @@ const QRScannerScreen = ({ navigation, route }: any) => {
     setScanned(true);
 
     try {
-      if (!data || typeof data !== "string" || data.trim().length === 0) {
-        Alert.alert("QR Inválido", "El código QR no contiene datos válidos");
+      if (!data || typeof data !== 'string' || data.trim().length === 0) {
+        Alert.alert('QR Inválido', 'El código QR no contiene datos válidos');
         scannedRef.current = false;
         setScanned(false);
         return;
@@ -89,14 +76,14 @@ const QRScannerScreen = ({ navigation, route }: any) => {
       const charger = route.params?.charger;
       const chargerId = route.params?.chargerId || `qr_${Date.now()}`;
 
-      navigation.navigate("ChargingDetail", {
+      navigation.navigate('ChargingDetail', {
         charger,
         chargerId,
         qrScanned: true,
         scannedQRData: data,
       });
     } catch (error) {
-      Alert.alert("Error", "No se pudo procesar el código QR");
+      Alert.alert('Error', 'No se pudo procesar el código QR');
       scannedRef.current = false;
       setScanned(false);
     }
@@ -112,15 +99,12 @@ const QRScannerScreen = ({ navigation, route }: any) => {
         autofocus="on"
         onBarcodeScanned={handleBarcodeScanned}
         barcodeScannerSettings={{
-          barcodeTypes: ["qr"],
+          barcodeTypes: ['qr'],
         }}
       />
 
       {/* Overlay positioned absolutely on top */}
-      <View
-        style={[StyleSheet.absoluteFillObject, styles.overlay]}
-        pointerEvents="none"
-      >
+      <View style={[StyleSheet.absoluteFillObject, styles.overlay]} pointerEvents="none">
         <View style={styles.topOverlay} />
         <View style={styles.middleContainer}>
           <View style={styles.sideOverlay} />
@@ -150,10 +134,7 @@ const QRScannerScreen = ({ navigation, route }: any) => {
         </TouchableOpacity>
       )}
 
-      <TouchableOpacity
-        style={styles.closeButton}
-        onPress={() => navigation.goBack()}
-      >
+      <TouchableOpacity style={styles.closeButton} onPress={() => navigation.goBack()}>
         <MaterialCommunityIcons name="close" size={24} color="#fff" />
       </TouchableOpacity>
     </View>
@@ -163,20 +144,20 @@ const QRScannerScreen = ({ navigation, route }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   loadingText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   contentContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#000",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000',
     paddingHorizontal: 24,
   },
   icon: {
@@ -184,65 +165,65 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: "bold",
-    color: "#fff",
+    fontWeight: 'bold',
+    color: '#fff',
     marginBottom: 12,
-    textAlign: "center",
+    textAlign: 'center',
   },
   description: {
     fontSize: 14,
-    color: "#ccc",
+    color: '#ccc',
     marginBottom: 24,
-    textAlign: "center",
+    textAlign: 'center',
   },
   button: {
-    backgroundColor: "#1E90FF",
+    backgroundColor: '#1E90FF',
     paddingHorizontal: 32,
     paddingVertical: 12,
     borderRadius: 8,
   },
   buttonText: {
-    color: "#fff",
-    fontWeight: "600",
+    color: '#fff',
+    fontWeight: '600',
     fontSize: 16,
   },
   overlay: {
-    flexDirection: "column",
-    justifyContent: "space-between",
+    flexDirection: 'column',
+    justifyContent: 'space-between',
   },
   topOverlay: {
     flex: 0.2,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   bottomOverlay: {
     flex: 0.2,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "flex-end",
-    alignItems: "center",
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
     paddingBottom: 20,
   },
   middleContainer: {
     flex: 0.6,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   sideOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   frame: {
-    borderColor: "#1E90FF",
+    borderColor: '#1E90FF',
     borderWidth: 2,
-    justifyContent: "space-between",
-    alignItems: "space-between",
+    justifyContent: 'space-between',
+    alignItems: 'space-between',
   },
   corner: {
     width: 30,
     height: 30,
-    borderColor: "#1E90FF",
+    borderColor: '#1E90FF',
     borderWidth: 3,
-    position: "absolute",
+    position: 'absolute',
   },
   topLeft: {
     top: -2,
@@ -269,31 +250,31 @@ const styles = StyleSheet.create({
     borderTopWidth: 0,
   },
   text: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-    textAlign: "center",
+    textAlign: 'center',
     marginHorizontal: 20,
   },
   closeButton: {
-    position: "absolute",
+    position: 'absolute',
     top: 40,
     right: 20,
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     padding: 12,
     borderRadius: 24,
   },
   rescalButton: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 30,
-    alignSelf: "center",
-    backgroundColor: "#1E90FF",
+    alignSelf: 'center',
+    backgroundColor: '#1E90FF',
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 24,
   },
   rescalButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
+    color: '#fff',
+    fontWeight: 'bold',
     fontSize: 16,
   },
 });

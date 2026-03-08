@@ -1,10 +1,9 @@
-export { default as AuthScreen } from "./AuthScreen";
-export { default as ChargingDetailScreen } from "./ChargingDetailScreen";
-export { default as HistoryScreen } from "./HistoryScreen";
-export { default as HomeScreen } from "./HomeScreen";
-export { default as MapScreen } from "./MapScreen";
-export { default as PaymentScreen } from "./PaymentScreen";
-export { default as PreAuthPaymentScreen } from "./PreAuthPaymentScreen";
-export { default as ProfileScreen } from "./ProfileScreen";
-export { default as QRScannerScreen } from "./QRScannerScreen";
-
+export { default as AuthScreen } from './AuthScreen';
+export { default as ChargingDetailScreen } from './ChargingDetailScreen';
+export { default as HistoryScreen } from './HistoryScreen';
+export { default as HomeScreen } from './HomeScreen';
+export { default as MapScreen } from './MapScreen';
+export { default as PaymentScreen } from './PaymentScreen';
+export { default as PreAuthPaymentScreen } from './PreAuthPaymentScreen';
+export { default as ProfileScreen } from './ProfileScreen';
+export { default as QRScannerScreen } from './QRScannerScreen';

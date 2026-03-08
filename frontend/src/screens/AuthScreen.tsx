@@ -1,38 +1,38 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useAuth } from "../context/AuthContext";
-import { useTheme } from "../context/ThemeContext";
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 const AuthScreen = ({ isLogin = true }: { isLogin?: boolean }) => {
   const insets = useSafeAreaInsets();
   const { signIn, signUp } = useAuth();
   const { colors } = useTheme();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [isLoginMode, setIsLoginMode] = useState(isLogin);
 
   const handleAuth = async () => {
     if (!email || !password) {
-      Alert.alert("Error", "Por favor completa todos los campos");
+      Alert.alert('Error', 'Por favor completa todos los campos');
       return;
     }
 
     if (!isLoginMode && !name) {
-      Alert.alert("Error", "Por favor ingresa tu nombre");
+      Alert.alert('Error', 'Por favor ingresa tu nombre');
       return;
     }
 
@@ -44,10 +44,7 @@ const AuthScreen = ({ isLogin = true }: { isLogin?: boolean }) => {
         await signUp(name, email, password);
       }
     } catch (error: any) {
-      Alert.alert(
-        "Error de autenticación",
-        error.message || "Ocurrió un error",
-      );
+      Alert.alert('Error de autenticación', error.message || 'Ocurrió un error');
     } finally {
       setLoading(false);
     }
@@ -55,16 +52,14 @@ const AuthScreen = ({ isLogin = true }: { isLogin?: boolean }) => {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={[styles.container, { backgroundColor: colors.background }]}
     >
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
-          <Text style={[styles.title, { color: colors.primary }]}>
-            ProseApp
-          </Text>
+          <Text style={[styles.title, { color: colors.primary }]}>ProseApp</Text>
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-            {isLoginMode ? "Inicia sesión" : "Crea tu cuenta"}
+            {isLoginMode ? 'Inicia sesión' : 'Crea tu cuenta'}
           </Text>
         </View>
 
@@ -133,20 +128,13 @@ const AuthScreen = ({ isLogin = true }: { isLogin?: boolean }) => {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.buttonText}>
-              {isLoginMode ? "Inicia sesión" : "Registrarse"}
-            </Text>
+            <Text style={styles.buttonText}>{isLoginMode ? 'Inicia sesión' : 'Registrarse'}</Text>
           )}
         </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => setIsLoginMode(!isLoginMode)}
-          disabled={loading}
-        >
+        <TouchableOpacity onPress={() => setIsLoginMode(!isLoginMode)} disabled={loading}>
           <Text style={[styles.toggleText, { color: colors.primary }]}>
-            {isLoginMode
-              ? "¿No tienes cuenta? Regístrate"
-              : "¿Ya tienes cuenta? Inicia sesión"}
+            {isLoginMode ? '¿No tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Inicia sesión'}
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -157,55 +145,55 @@ const AuthScreen = ({ isLogin = true }: { isLogin?: boolean }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: '#f5f5f5',
   },
   scrollViewContent: {
     flexGrow: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
     paddingHorizontal: 20,
   },
   header: {
-    alignItems: "center",
+    alignItems: 'center',
     marginBottom: 40,
   },
   title: {
     fontSize: 32,
-    fontWeight: "bold",
-    color: "#1E90FF",
+    fontWeight: 'bold',
+    color: '#1E90FF',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: "#666",
+    color: '#666',
   },
   input: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 12,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: "#e0e0e0",
+    borderColor: '#e0e0e0',
     fontSize: 16,
   },
   button: {
-    backgroundColor: "#1E90FF",
+    backgroundColor: '#1E90FF',
     borderRadius: 8,
     paddingVertical: 14,
-    alignItems: "center",
+    alignItems: 'center',
     marginVertical: 20,
   },
   buttonDisabled: {
     opacity: 0.6,
   },
   buttonText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   toggleText: {
-    textAlign: "center",
-    color: "#1E90FF",
+    textAlign: 'center',
+    color: '#1E90FF',
     fontSize: 14,
     marginTop: 10,
   },

@@ -3,9 +3,6 @@ name: Backend CI
 on:
   pull_request:
     branches: [develop, master]
-    paths:
-      - 'backend/**'
-      - '.github/workflows/backend-ci.yml'
 
 jobs:
   build-and-test:
@@ -15,8 +12,22 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for backend changes
+        id: changes
+        run: |
+          CHANGED=$(git diff --name-only ${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }} \
+            | grep -E '^(backend/|\.github/workflows/backend-ci\.yml)' || true)
+          if [ -z "$CHANGED" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Set up JDK 17
+        if: steps.changes.outputs.skip == 'false'
         uses: actions/setup-java@v4
         with:
           java-version: '17'
@@ -24,11 +35,12 @@ jobs:
           cache: maven
 
       - name: Build and run tests
+        if: steps.changes.outputs.skip == 'false'
         working-directory: backend
         run: mvn verify -q
 
       - name: Upload test results
-        if: always()
+        if: always() && steps.changes.outputs.skip == 'false'
         uses: actions/upload-artifact@v4
         with:
           name: test-results
