@@ -62,6 +62,15 @@ services:
       - prometheus
     restart: unless-stopped
 
+  admin-web:
+    build: ./admin
+    container_name: chargers-admin
+    ports:
+      - "8090:80"
+    depends_on:
+      - chargers-app
+    restart: unless-stopped
+
 volumes:
   grafana-data:
   loki-data:
