@@ -164,28 +164,98 @@
 
 ## Traceability
 
-*(Populated during roadmap creation)*
-
 | Requirement | Phase | Status |
 |---|---|---|
-| DEC-01 to DEC-13 | Phase 0 | Pending |
-| INF-01, INF-02 | Phase 1 | Pending |
-| AUTH-01 to AUTH-08 | Phase 1 | Pending |
-| OCPP-01 to OCPP-10 | Phase 2 | Pending |
-| SESS-01 to SESS-07 | Phase 3 | Pending |
-| PRICE-01 to PRICE-06 | Phase 3 | Pending |
-| PAY-01 to PAY-08 | Phase 4 | Pending |
-| NOTIF-01 to NOTIF-05 | Phase 5 | Pending |
-| ADM-01 to ADM-08 | Phase 6 | Pending |
-| OWN-01, OWN-02 | Phase 6 | Pending |
-| INF-03 to INF-08 | Phases 1-6 | Pending |
-| CHRG-01 to CHRG-07 | Phase 1-2 | Pending |
+| DEC-01 | Phase 0 | Pending |
+| DEC-02 | Phase 0 | Pending |
+| DEC-03 | Phase 0 | Pending |
+| DEC-04 | Phase 0 | Pending |
+| DEC-05 | Phase 0 | Pending |
+| DEC-06 | Phase 0 | Pending |
+| DEC-07 | Phase 0 | Pending |
+| DEC-08 | Phase 0 | Pending |
+| DEC-09 | Phase 0 | Pending |
+| DEC-10 | Phase 0 | Pending |
+| DEC-11 | Phase 0 | Pending |
+| DEC-12 | Phase 0 | Pending |
+| DEC-13 | Phase 0 | Pending |
+| INF-01 | Phase 1 | Pending |
+| INF-02 | Phase 1 | Pending |
+| AUTH-01 | Phase 1 | Pending |
+| AUTH-02 | Phase 1 | Pending |
+| AUTH-03 | Phase 1 | Pending |
+| AUTH-04 | Phase 1 | Pending |
+| AUTH-05 | Phase 1 | Pending |
+| AUTH-06 | Phase 1 | Pending |
+| AUTH-07 | Phase 1 | Pending |
+| AUTH-08 | Phase 1 | Pending |
+| CHRG-01 | Phase 1 | Pending |
+| CHRG-02 | Phase 1 | Pending |
+| CHRG-03 | Phase 1 | Pending |
+| CHRG-04 | Phase 1 | Pending |
+| CHRG-05 | Phase 1 | Pending |
+| OCPP-01 | Phase 2 | Pending |
+| OCPP-02 | Phase 2 | Pending |
+| OCPP-03 | Phase 2 | Pending |
+| OCPP-04 | Phase 2 | Pending |
+| OCPP-05 | Phase 2 | Pending |
+| OCPP-06 | Phase 2 | Pending |
+| OCPP-07 | Phase 2 | Pending |
+| OCPP-08 | Phase 2 | Pending |
+| OCPP-09 | Phase 2 | Pending |
+| OCPP-10 | Phase 2 | Pending |
+| CHRG-06 | Phase 2 | Pending |
+| CHRG-07 | Phase 2 | Pending |
+| INF-03 | Phase 2 | Pending |
+| INF-04 | Phase 2 | Pending |
+| SESS-01 | Phase 3 | Pending |
+| SESS-02 | Phase 3 | Pending |
+| SESS-03 | Phase 3 | Pending |
+| SESS-04 | Phase 3 | Pending |
+| SESS-05 | Phase 3 | Pending |
+| SESS-06 | Phase 3 | Pending |
+| SESS-07 | Phase 3 | Pending |
+| PRICE-01 | Phase 3 | Pending |
+| PRICE-02 | Phase 3 | Pending |
+| PRICE-03 | Phase 3 | Pending |
+| PRICE-04 | Phase 3 | Pending |
+| PRICE-05 | Phase 3 | Pending |
+| PRICE-06 | Phase 3 | Pending |
+| PAY-01 | Phase 4 | Pending |
+| PAY-02 | Phase 4 | Pending |
+| PAY-03 | Phase 4 | Pending |
+| PAY-04 | Phase 4 | Pending |
+| PAY-05 | Phase 4 | Pending |
+| PAY-06 | Phase 4 | Pending |
+| PAY-07 | Phase 4 | Pending |
+| PAY-08 | Phase 4 | Pending |
+| NOTIF-01 | Phase 5 | Pending |
+| NOTIF-02 | Phase 5 | Pending |
+| NOTIF-03 | Phase 5 | Pending |
+| NOTIF-04 | Phase 5 | Pending |
+| NOTIF-05 | Phase 5 | Pending |
+| INF-05 | Phase 5 | Pending |
+| INF-06 | Phase 5 | Pending |
+| ADM-01 | Phase 6 | Pending |
+| ADM-02 | Phase 6 | Pending |
+| ADM-03 | Phase 6 | Pending |
+| ADM-04 | Phase 6 | Pending |
+| ADM-05 | Phase 6 | Pending |
+| ADM-06 | Phase 6 | Pending |
+| ADM-07 | Phase 6 | Pending |
+| ADM-08 | Phase 6 | Pending |
+| OWN-01 | Phase 6 | Pending |
+| OWN-02 | Phase 6 | Pending |
+| INF-07 | Phase 6 | Pending |
+| INF-08 | Phase 6 | Pending |
 
 **Coverage:**
-- v1 requirements: 65 total
-- Mapped to phases: 65
-- Unmapped: 0 ✓
+- v1 requirements: 82 total
+- Mapped to phases: 82
+- Unmapped: 0 (100% coverage verified)
+
+**Note on previous count:** The initial draft stated 65 requirements. The correct count after individual enumeration is 82. The 17-requirement gap was due to the CHRG (7), NOTIF (5), and INF (8) groups not being fully counted in the original draft total.
 
 ---
 *Requirements defined: 2026-03-18*
-*Last updated: 2026-03-18 after initial definition*
+*Last updated: 2026-03-18 — traceability populated after roadmap creation*
