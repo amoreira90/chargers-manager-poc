@@ -246,6 +246,14 @@ const ChargingDetailScreen = ({ route, navigation }: any) => {
     });
   };
 
+  const handleSkipQR = () => {
+    const skippedQRData = `QR-OMITIDO-${charger.id}`;
+    setScannedQRCode(skippedQRData);
+    setMachineStatus('scanned');
+    setStatusMessage('Continuando sin escaneo QR. Conectando con la máquina...');
+    setTimeout(() => connectToMachine(skippedQRData), 800);
+  };
+
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -552,18 +560,39 @@ const ChargingDetailScreen = ({ route, navigation }: any) => {
 
         {/* Action Buttons */}
         {machineStatus === 'idle' && (
-          <TouchableOpacity
-            style={[styles.actionButton, { backgroundColor: '#1E90FF' }]}
-            onPress={handleScanQR}
-          >
-            <MaterialCommunityIcons
-              name="qrcode-scan"
-              size={22}
-              color="#fff"
-              style={{ marginRight: 10 }}
-            />
-            <Text style={styles.actionButtonText}>Escanear QR del Cargador</Text>
-          </TouchableOpacity>
+          <>
+            <TouchableOpacity
+              style={[styles.actionButton, { backgroundColor: '#1E90FF' }]}
+              onPress={handleScanQR}
+            >
+              <MaterialCommunityIcons
+                name="qrcode-scan"
+                size={22}
+                color="#fff"
+                style={{ marginRight: 10 }}
+              />
+              <Text style={styles.actionButtonText}>Escanear QR del Cargador</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.actionButton,
+                styles.secondaryActionButton,
+                { borderColor: colors.border, backgroundColor: colors.card },
+              ]}
+              onPress={handleSkipQR}
+            >
+              <MaterialCommunityIcons
+                name="skip-next"
+                size={22}
+                color={colors.textSecondary}
+                style={{ marginRight: 10 }}
+              />
+              <Text style={[styles.secondaryActionButtonText, { color: colors.textSecondary }]}>
+                Saltear escaneo de QR
+              </Text>
+            </TouchableOpacity>
+          </>
         )}
 
         {machineStatus === 'connected' && !preAuth && (
@@ -856,10 +885,17 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
   },
+  secondaryActionButton: {
+    borderWidth: 1,
+  },
   actionButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  secondaryActionButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
   },
   spacer: {
     height: 20,
