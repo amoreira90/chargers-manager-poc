@@ -1,4 +1,4 @@
-# Roadmap: PLUG UY — Plataforma EVSE
+# Roadmap: Prosepac — Plataforma EVSE
 
 ## Descripción General
 

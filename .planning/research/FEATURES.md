@@ -1,7 +1,7 @@
 # Feature Landscape
 
 **Domain:** EVSE (Electric Vehicle Supply Equipment) management platform
-**Project:** PLUG UY — chargers-manager-poc
+**Project:** Prosepac — chargers-manager-poc
 **Researched:** 2026-03-18
 **Overall confidence:** MEDIUM (external tools unavailable; findings based on OCPP 1.6 spec knowledge through Aug 2025 + PROJECT.md client requirements. EVSE industry features are well-established; training data is highly reliable for this domain.)
 
@@ -52,7 +52,7 @@ Features users expect from any EVSE platform. Missing = product feels incomplete
 
 | Feature | Why Expected | Complexity | Notes |
 |---------|--------------|------------|-------|
-| OCPP 1.6 Central System | Hardware dictated by PLUG UY; without this, chargers don't work | High | WebSocket server; must handle: BootNotification, Heartbeat, StatusNotification, StartTransaction, StopTransaction, MeterValues, RemoteStart/Stop, ChangeAvailability |
+| OCPP 1.6 Central System | Hardware dictated by Prosepac; without this, chargers don't work | High | WebSocket server; must handle: BootNotification, Heartbeat, StatusNotification, StartTransaction, StopTransaction, MeterValues, RemoteStart/Stop, ChangeAvailability |
 | Graceful connectivity loss handling | Sessions drop in real life; platform must not double-charge or lose data | High | Buffer MeterValues locally on charger; reconcile on reconnect; partial session billing |
 | HTTPS + WSS TLS 1.2+ | Baseline security; plain HTTP not acceptable for payment data | Low | Infra config; not code complexity |
 | Idempotent payment on session end | Network retries must not double-charge; users will dispute duplicates immediately | High | Payment provider idempotency keys + session state machine |
@@ -95,7 +95,7 @@ Features that set the product apart. Not baseline, but valued and remembered.
 | Earnings dashboard with payout timeline for owners | Owners trust platform when they can see money moving and when it arrives | Medium | Requires settlement records tied to sessions; liquidation model (per-tx vs monthly) affects complexity |
 | Peer-to-peer home charger sharing (homeowner rents access) | Expands supply without capital; differentiates from operator-only networks | High | Requires Fase 2; pricing based on UTE electricity bill per PROJECT.md |
 | Real-time map with filter (power, connector type, price) | Discovery feature; platforms without maps lose users to Google Maps results | Medium | Map is Fase 2 per PROJECT.md; basic list in MVP |
-| QR code session start | Reduces app navigation to one tap; reduces misidentification errors | Low | Explicitly descoped from MVP by PLUG UY |
+| QR code session start | Reduces app navigation to one tap; reduces misidentification errors | Low | Explicitly descoped from MVP by Prosepac |
 | OCPI 2.2 roaming interoperability | Drivers can use any roaming-enabled charger on the network | High | Fase 2 per PROJECT.md |
 | AI-powered session anomaly detection (unexpected energy spike) | Catches meter tampering or faulty chargers before disputes | High | Post-MVP; requires historical data baseline |
 
@@ -107,14 +107,14 @@ Features to explicitly NOT build in MVP. Building these is a trap.
 
 | Anti-Feature | Why Avoid | What to Do Instead |
 |--------------|-----------|-------------------|
-| Self-service charger registration by owner | PLUG UY explicitly rejected this; charger config is technically complex (OCPP auth, power limits) | Admin registers all chargers in MVP; owner onboarding is Fase 2 |
-| QR code session start in MVP | PLUG UY said not needed for V1; adds complexity (camera permissions, QR generation, print coordination) | Use app-based charger selection from list/map |
+| Self-service charger registration by owner | Prosepac explicitly rejected this; charger config is technically complex (OCPP auth, power limits) | Admin registers all chargers in MVP; owner onboarding is Fase 2 |
+| QR code session start in MVP | Prosepac said not needed for V1; adds complexity (camera permissions, QR generation, print coordination) | Use app-based charger selection from list/map |
 | Multi-currency support | Uruguay operates in pesos; adding USD in MVP adds FX complexity, DGI complications | Single currency MVP; currency choice is a blocker to resolve in Fase 0 |
 | In-app wallet / prepaid balance | Adds regulatory complexity (e-money regulation in Uruguay); not needed for per-session billing | Pay-per-session with stored card; wallet is Fase 2 decision per PROJECT.md |
 | RFID card support | OCPP 1.6 supports RFID (idTag) but it's an ops/hardware problem; mobile-first means app-first | App-initiated sessions only; RFID can be retrofitted later without breaking session model |
 | Multi-language support in MVP | Platform is Uruguay-only; single language reduces scope | Spanish only; i18n scaffolding can be built but content is single-language |
 | Web portal for end users | Mobile-first per PROJECT.md; web app is Fase 2 | React Native app only; admin web is already in scope and is a different actor |
-| Subscription billing (monthly plans) | Adds subscription management complexity; per-session billing is simpler and matches PLUG UY's commission model | Pay-per-session only in MVP |
+| Subscription billing (monthly plans) | Adds subscription management complexity; per-session billing is simpler and matches Prosepac's commission model | Pay-per-session only in MVP |
 | Hardware provisioning / firmware management | Out of scope for CSMS layer; belongs to OEM tooling | OCPP handles operational commands only; no firmware push via OCPP FirmwareManagement in MVP |
 
 ---
@@ -178,7 +178,7 @@ Split payment (platform commission)
 ### Defer to Fase 2
 
 - Map with real-time overlays and filters
-- QR code session initiation (already descoped by PLUG UY)
+- QR code session initiation (already descoped by Prosepac)
 - Owner self-service charger registration
 - Owner full panel with revenue reports and payout history
 - Home charger peer-to-peer sharing
@@ -211,6 +211,6 @@ These are not features to build — they are decisions that change feature imple
 - OCPP 1.6 protocol capabilities: HIGH — stable spec since 2015; well-documented in training data
 - ChargePoint / Electrify America / EVgo feature sets: MEDIUM — training data through Aug 2025; platform features evolve but core is stable
 - Uruguay-specific constraints (DGI, MercadoPago, UTE): MEDIUM — general knowledge; PROJECT.md provides client-validated context
-- PROJECT.md requirements (PLUG UY client feedback): HIGH — directly from client-provided spec and feedback document
+- PROJECT.md requirements (Prosepac client feedback): HIGH — directly from client-provided spec and feedback document
 
 Note: WebSearch, WebFetch, and Bash tools were denied during this research session. All findings are based on training data (knowledge cutoff Aug 2025) plus PROJECT.md context. The EVSE domain is well-established; protocol-level features (OCPP 1.6) are stable and high-confidence. Pricing model landscape and platform UX patterns are MEDIUM confidence — validate with current competitor research when tools become available.

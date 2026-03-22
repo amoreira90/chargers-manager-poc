@@ -1,7 +1,7 @@
 # Domain Pitfalls
 
 **Domain:** EVSE Platform (EV Charger Management) — OCPP 1.6, payments with split flows, React Native mobile
-**Project:** PLUG UY / Chargers Manager
+**Project:** Prosepac / Chargers Manager
 **Researched:** 2026-03-18
 **Overall confidence:** MEDIUM — based on training knowledge (cutoff Aug 2025). All external research tools were unavailable during this session. Findings reflect well-established OCPP, payment, and mobile patterns known before cutoff. Flag all claims for verification against current OCPP 1.6 spec and MercadoPago/Stripe docs before implementation.
 
@@ -355,7 +355,7 @@ Mistakes that cause data loss, payment fraud, rewrites, or production incidents.
 **What goes wrong:** OCPP 1.6 over WSS requires a valid TLS certificate on the Central System endpoint that the charger hardware trusts. Charger hardware (especially older EVSE units) may have a pinned CA list that doesn't include Let's Encrypt or may require a specific certificate format. Some EVSE hardware requires the backend to present a certificate from a commercial CA.
 
 **Prevention:**
-- Verify with PLUG UY / Prosepac what CA the physical chargers trust before choosing a TLS certificate provider
+- Verify with Prosepac / Prosepac what CA the physical chargers trust before choosing a TLS certificate provider
 - Test WSS connectivity with the actual charger hardware in a staging environment early
 - Use a wildcard or specific domain cert aligned with the charger configuration
 
@@ -404,6 +404,6 @@ Mistakes that cause data loss, payment fraud, rewrites, or production incidents.
 **Verification required before implementation:**
 - MercadoPago pre-authorization expiry window for Uruguay (may differ from Argentina — LOW confidence on exact duration)
 - MercadoPago Marketplace OAuth onboarding flow — verify current API version requirements (MEDIUM confidence on process, LOW on current URLs/scopes)
-- Physical charger CA trust list — requires direct confirmation from PLUG UY / Prosepac (LOW confidence without hardware spec)
+- Physical charger CA trust list — requires direct confirmation from Prosepac / Prosepac (LOW confidence without hardware spec)
 - Uruguay DGI e-factura requirements for platform commission — requires legal review (LOW confidence)
 - OCPP 1.6 exact behavior of `ConnectionTimeOut` configuration parameter — verify in OCA spec PDF (HIGH confidence on concept, MEDIUM on exact parameter name)

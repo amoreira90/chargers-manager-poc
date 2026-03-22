@@ -1,4 +1,4 @@
-# Requirements: PLUG UY — EVSE Platform
+# Requirements: Prosepac — EVSE Platform
 
 **Defined:** 2026-03-18
 **Core Value:** Un conductor puede encontrar un cargador disponible, iniciar y pagar una sesión de carga, y el propietario recibe su liquidación — todo sin fricción operativa.
@@ -11,22 +11,22 @@
 - [ ] **DEC-02**: Moneda de operación definida (pesos uruguayos vs dólares) con implicancias fiscales evaluadas (IVA, DGI e-factura)
 - [ ] **DEC-03**: Modelo de comisión definido: monto mínimo fijo + % fijo + decisión de tope máximo
 - [ ] **DEC-04**: Modelo de liquidación definido: por transacción vs mensual
-- [ ] **DEC-05**: Flujo de alta de cargadores confirmado: solo admin da de alta en MVP (requiere aprobación formal de PLUG UY)
-- [ ] **DEC-06**: Jerarquía de roles definida: ¿existe nivel intermedio "admin de cartera de edificios"?
+- [ ] **DEC-05**: Flujo de alta de cargadores confirmado: solo admin da de alta en MVP (requiere aprobación formal de Prosepac)
+- [x] **DEC-06**: Jerarquía de roles definida — 4 roles: Admin (Prosepac), Veedor, Empresa, Usuario
 - [ ] **DEC-07**: Flujo de sesión abierta / manguera trabada definido: tiempo de gracia, monto de multa, flujo de notificaciones, RemoteStop automático
 - [ ] **DEC-08**: UX de estimación de precio pre-sesión definida (sin % de batería conocido)
 - [ ] **DEC-09**: Decisión sobre billeteras digitales en MVP: sí o no
 - [ ] **DEC-10**: Alcance del Panel Propietario en MVP vs Fase 2 definido
 - [ ] **DEC-11**: Especificación Panel Admin: mapa o lista de cargadores, filtros, log por ID de cargador, reportes
 - [ ] **DEC-12**: Nombre de plataforma unificado (CARGÁ / Cargapp / PlugUY)
-- [ ] **DEC-13**: Confirmar variante OCPP del hardware de PLUG UY: OCPP 1.6J (JSON/WebSocket) vs 1.6S (SOAP)
+- [ ] **DEC-13**: Confirmar variante OCPP del hardware de Prosepac: OCPP 1.6J (JSON/WebSocket) vs 1.6S (SOAP)
 
 ### Autenticación y Roles
 
 - [ ] **AUTH-01**: Usuario puede registrarse con email y contraseña
 - [ ] **AUTH-02**: Usuario puede autenticarse con Google o Apple (OAuth 2.0)
 - [ ] **AUTH-03**: Usuario puede recuperar contraseña mediante email
-- [ ] **AUTH-04**: Sistema soporta roles: Usuario Final, Propietario, Admin (+ rol intermedio TBD en DEC-06)
+- [ ] **AUTH-04**: Sistema soporta 4 roles: Admin (Prosepac — acceso total a la plataforma), Veedor (grupo económico — visibilidad agregada multi-empresa), Empresa (propietario de cargadores — ve solo los suyos), Usuario (conductor final)
 - [ ] **AUTH-05**: Un usuario puede tener múltiples roles simultáneos (conductor + propietario)
 - [ ] **AUTH-06**: Admin puede suspender o eliminar cuentas de usuario
 - [ ] **AUTH-07**: Panel de administración requiere 2FA
@@ -152,9 +152,9 @@
 
 | Feature | Razón |
 |---|---|
-| Registro de cargadores por propietario en MVP | Configuración técnica compleja — solo admin en MVP (feedback PLUG UY) |
-| QR code en MVP | Descartado por PLUG UY para primera versión |
-| RFID / tarjetas de acceso | No mencionado por PLUG UY, alta complejidad |
+| Registro de cargadores por propietario en MVP | Configuración técnica compleja — solo admin en MVP (feedback Prosepac) |
+| QR code en MVP | Descartado por Prosepac para primera versión |
+| RFID / tarjetas de acceso | No mencionado por Prosepac, alta complejidad |
 | Billeteras digitales in-app | A resolver en DEC-09 — probablemente v2 |
 | Precios calculados en frontend | Riesgo de billing — backend es única fuente de verdad |
 | OCPI roaming | Fase 2 explícita |

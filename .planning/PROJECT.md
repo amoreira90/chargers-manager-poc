@@ -1,8 +1,8 @@
-# PLUG UY — EVSE Platform
+# Prosepac — EVSE Platform
 
 ## What This Is
 
-Plataforma de gestión de cargadores de vehículos eléctricos para PLUG UY (Uruguay). Conecta tres actores: usuarios finales que cargan su vehículo, empresas/parkings que ofrecen el servicio, y administradores de plataforma. Opera bajo OCPP 1.6 para comunicación con cargadores físicos y cobra comisión por transacción.
+Plataforma de gestión de cargadores de vehículos eléctricos para Prosepac (Uruguay). Conecta tres actores: usuarios finales que cargan su vehículo, empresas/parkings que ofrecen el servicio, y administradores de plataforma. Opera bajo OCPP 1.6 para comunicación con cargadores físicos y cobra comisión por transacción.
 
 El proyecto parte del POC existente (chargers-manager-poc) como base técnica a evolucionar hacia producción.
 
@@ -25,7 +25,7 @@ Un conductor puede encontrar un cargador disponible, iniciar y pagar una sesión
 - [ ] Definir modelo de comisión: % fijo, mínimo fijo, tope
 - [ ] Definir modelo de liquidación: por transacción vs mensual
 - [ ] Resolver flujo de alta de cargadores: ¿propietario o solo admin?
-- [ ] Definir rol intermedio "admin de cartera de edificios" (jerarquía de roles)
+- [x] Definir jerarquía de roles — Admin (Prosepac), Veedor, Empresa, Usuario
 - [ ] Definir flujo de sesión abierta / manguera trabada: multa, monto, tiempo de gracia, notificaciones
 - [ ] Definir UX de estimación de precio pre-sesión sin % de batería conocido
 - [ ] Decisión sobre billeteras digitales: sí o no en MVP
@@ -37,9 +37,9 @@ Un conductor puede encontrar un cargador disponible, iniciar y pagar una sesión
 #### Fase 1 — MVP Backend + App Mobile
 
 - [ ] Autenticación: email/password + OAuth (Google/Apple) + recupero de contraseña
-- [ ] Sistema de roles: Usuario Final, Propietario, Admin (+ rol intermedio TBD)
+- [ ] Sistema de roles: Admin (Prosepac), Veedor, Empresa, Usuario
 - [ ] Un usuario puede tener múltiples roles simultáneos (conductor + propietario)
-- [ ] Alta de cargadores (solo admin en MVP según feedback de PLUG UY)
+- [ ] Alta de cargadores (solo admin en MVP según feedback de Prosepac)
 - [ ] Comunicación OCPP 1.6: BootNotification, Heartbeat, StatusNotification, Start/StopTransaction, MeterValues, RemoteStart/Stop, ChangeAvailability
 - [ ] Estado en tiempo real de cargadores (latencia máx 5s)
 - [ ] Modelo de precios: bajada de bandera + precio por kWh por cargador
@@ -70,22 +70,22 @@ Un conductor puede encontrar un cargador disponible, iniciar y pagar una sesión
 
 ### Out of Scope
 
-- Registro de cargadores por el propietario en MVP — solo admin puede dar de alta (feedback PLUG UY)
-- QR code en MVP — descartado por PLUG UY para la primera versión
+- Registro de cargadores por el propietario en MVP — solo admin puede dar de alta (feedback Prosepac)
+- QR code en MVP — descartado por Prosepac para la primera versión
 - OCPI roaming en MVP — Fase 2
 - Web app en MVP — mobile-first
 
 ## Context
 
 - **Documento de requerimientos**: `EVSE - Requerimientos.docx` v1.0 (Marzo 2026) — spec driven development
-- **Feedback del cliente**: `PLUG UY-Devolución.pdf` — resumen de devolución de PLUG UY con puntos abiertos
+- **Feedback del cliente**: `Prosepac-Devolución.pdf` — resumen de devolución de Prosepac con puntos abiertos
 - **POC existente**: `chargers-manager-poc` — backend Java hexagonal (Spring Boot) + React Native + Expo. Cubre: CRUD de cargadores, estados, mapa básico, autenticación, AOP para métricas/logging, observabilidad con Prometheus/Grafana/Loki
 - **Protocolo físico**: OCPP 1.6 (Central System en backend)
-- **Actor clave**: Prosepac = nombre de la empresa que opera los cargadores y carga la configuración
+- **Actor clave**: Prosepac = empresa operadora de la plataforma. Ocupa el rol Admin — acceso total al sistema, configura cargadores, precios y planes de distribución
 
 ## Constraints
 
-- **Protocolo**: OCPP 1.6 — no negociable, dictado por los cargadores físicos de PLUG UY
+- **Protocolo**: OCPP 1.6 — no negociable, dictado por los cargadores físicos de Prosepac
 - **Plataforma inicial**: Mobile-first (React Native + Expo) — web es Fase 2
 - **Equipo**: Pequeño (2-3 personas)
 - **Presión de tiempo**: Informal, sin fecha comprometida — pero cliente espera avances
@@ -96,12 +96,12 @@ Un conductor puede encontrar un cargador disponible, iniciar y pagar una sesión
 
 | Decisión | Rationale | Outcome |
 |---|---|---|
-| OCPP 1.6 como protocolo | Dictado por hardware de PLUG UY | — Pendiente validación de versión exacta |
+| OCPP 1.6 como protocolo | Dictado por hardware de Prosepac | — Pendiente validación de versión exacta |
 | POC como base de evolución | Evitar reescritura total, reutilizar arquitectura hexagonal | — Pending |
-| Solo admin da de alta cargadores en MVP | Feedback explícito de PLUG UY: configuración técnica compleja | — Pending aprobación equipo |
-| QR descartado en MVP | PLUG UY lo consideró no necesario para primera versión | — Pending |
-| Stripe vs MercadoPago | Sin definir — bloqueante crítico | — Pending reunión con PLUG UY |
-| Moneda (pesos vs USD) | Sin definir — PLUG UY prefiere pesos, hay implicancias fiscales | — Pending |
+| Solo admin da de alta cargadores en MVP | Feedback explícito de Prosepac: configuración técnica compleja | — Pending aprobación equipo |
+| QR descartado en MVP | Prosepac lo consideró no necesario para primera versión | — Pending |
+| Stripe vs MercadoPago | Sin definir — bloqueante crítico | — Pending reunión con Prosepac |
+| Moneda (pesos vs USD) | Sin definir — Prosepac prefiere pesos, hay implicancias fiscales | — Pending |
 
 ---
 *Last updated: 2026-03-18 after initialization*

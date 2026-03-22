@@ -1,13 +1,13 @@
 # Project Research Summary
 
-**Project:** PLUG UY — EVSE Management Platform (chargers-manager-poc)
+**Project:** Prosepac — EVSE Management Platform (chargers-manager-poc)
 **Domain:** EV Charger Management (EVSE) with OCPP 1.6, split payments, and mobile-first UX
 **Researched:** 2026-03-18
 **Confidence:** MEDIUM
 
 ## Executive Summary
 
-PLUG UY is a brownfield evolution of a working POC into a production-grade EVSE platform. The existing hexagonal architecture (Spring Boot + Java, React Native + Expo) is the correct foundation and should not be rewritten — it is the asset that makes this project tractable for a 2-3 person team. The primary engineering challenge is not a typical CRUD application: it requires a bidirectional, stateful WebSocket protocol (OCPP 1.6) to control physical charger hardware, a reliable session billing state machine, and split payment flows with Uruguay-specific regulatory constraints. These three concerns are tightly coupled and must be designed together before coding begins.
+Prosepac is a brownfield evolution of a working POC into a production-grade EVSE platform. The existing hexagonal architecture (Spring Boot + Java, React Native + Expo) is the correct foundation and should not be rewritten — it is the asset that makes this project tractable for a 2-3 person team. The primary engineering challenge is not a typical CRUD application: it requires a bidirectional, stateful WebSocket protocol (OCPP 1.6) to control physical charger hardware, a reliable session billing state machine, and split payment flows with Uruguay-specific regulatory constraints. These three concerns are tightly coupled and must be designed together before coding begins.
 
 The recommended approach is a phased expansion of the POC: first migrate data persistence and add authentication, then implement the OCPP Central System (the highest-risk gap), then layer session management and payments on top of a stable OCPP foundation. The Java-OCA-OCPP library (ChargeTime EU) fits cleanly into the existing hexagonal architecture and is the recommended OCPP implementation path. MercadoPago is recommended as the primary payment provider given pre-existing integration planning and superior Uruguay/LatAm coverage, but the Marketplace split payment feature's Uruguay availability must be verified before any payment code is written. This is a Fase 0 blocker.
 
@@ -60,7 +60,7 @@ The feature set divides cleanly into three categories. The OCPP Central System i
 - Owner self-service charger registration
 
 **Defer (v2+):**
-- QR code session start (explicitly descoped by PLUG UY for MVP)
+- QR code session start (explicitly descoped by Prosepac for MVP)
 - OCPI 2.2 roaming interoperability
 - Dynamic pricing (peak/off-peak)
 - Web app for end users
@@ -212,7 +212,7 @@ The build order is dictated by hard dependencies in the data flow. Each phase's 
 | Area | Confidence | Notes |
 |------|------------|-------|
 | Stack | MEDIUM | Core Spring Boot + Java 21 + PostgreSQL is HIGH. Java-OCA-OCPP version and MercadoPago Uruguay Marketplace are MEDIUM/LOW and need verification before Fase 1 planning |
-| Features | HIGH | OCPP 1.6 spec is a published standard (2015). PLUG UY requirements come directly from client feedback. Feature landscape is stable. |
+| Features | HIGH | OCPP 1.6 spec is a published standard (2015). Prosepac requirements come directly from client feedback. Feature landscape is stable. |
 | Architecture | MEDIUM | OCPP 1.6 protocol semantics are HIGH confidence. Spring WebSocket implementation patterns are HIGH. Exact library integration details need Phase 2 research. |
 | Pitfalls | MEDIUM | OCPP pitfalls are well-established from production EVSE implementations. MercadoPago-specific pitfalls (pre-auth expiry window, Marketplace scopes) are MEDIUM — require direct API documentation verification. |
 
@@ -226,7 +226,7 @@ The build order is dictated by hard dependencies in the data flow. Each phase's 
 
 - **MercadoPago native React Native SDK + Expo 54 managed workflow:** MercadoPago's native SDK has historically required bare workflow (ejecting Expo). The `expo-web-browser` fallback (in-app browser checkout with deep link callback) is the safe default. Confirm managed workflow compatibility before committing to native SDK.
 
-- **Physical charger TLS certificate trust:** PLUG UY's charger hardware has a specific CA trust list. Must be confirmed with Prosepac before staging environment setup. If the hardware doesn't trust Let's Encrypt, a commercial CA cert is required.
+- **Physical charger TLS certificate trust:** Prosepac's charger hardware has a specific CA trust list. Must be confirmed with Prosepac before staging environment setup. If the hardware doesn't trust Let's Encrypt, a commercial CA cert is required.
 
 - **Fase 0 decisions blocking Fase 1 implementation:** Payment provider, currency, commission model, liquidation model, idle fee parameters, and DGI/fiscal compliance are all unresolved. Coding Fase 1 payment and billing features without these decisions leads to rework. All Fase 0 blockers must close before Fase 1 planning.
 
@@ -254,7 +254,7 @@ The build order is dictated by hard dependencies in the data flow. Each phase's 
 ### Tertiary (LOW confidence / needs verification)
 - MercadoPago Marketplace API Uruguay availability — requires direct verification with MercadoPago
 - Java-OCA-OCPP current release — requires checking GitHub releases page
-- Physical charger CA trust list — requires confirmation from PLUG UY / Prosepac
+- Physical charger CA trust list — requires confirmation from Prosepac / Prosepac
 - Uruguay DGI e-factura requirements for platform commission — requires legal review
 - MercadoPago pre-authorization expiry window for Uruguay — may differ from Argentina
 

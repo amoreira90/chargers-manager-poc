@@ -1,6 +1,6 @@
 # Technology Stack
 
-**Project:** PLUG UY — EVSE Management Platform
+**Project:** Prosepac — EVSE Management Platform
 **Researched:** 2026-03-18
 **Research Mode:** Ecosystem (brownfield — evolving existing POC)
 **Confidence Note:** External fetch tools unavailable during this session. All findings are from training data (cutoff August 2025). Confidence levels reflect this limitation. Flags marked [VERIFY] require validation before implementation.
@@ -72,7 +72,7 @@ SteVe (`steve-community/steve`) is a complete, standalone OCPP Central System ap
 
 #### Option C: CitrineOS (NOT RECOMMENDED for MVP)
 
-CitrineOS is an open-source CSMS (Charge Station Management System) from ChargePoint, supporting OCPP 2.0.1 and later versions. Since PLUG UY's hardware is locked to OCPP 1.6, CitrineOS does not apply.
+CitrineOS is an open-source CSMS (Charge Station Management System) from ChargePoint, supporting OCPP 2.0.1 and later versions. Since Prosepac's hardware is locked to OCPP 1.6, CitrineOS does not apply.
 
 #### Implementation Pattern with Java-OCA-OCPP
 
@@ -153,7 +153,7 @@ This is the biggest open question (explicitly flagged in PROJECT.md as a blockin
 **Why MercadoPago:**
 - Uruguay is a supported country for MercadoPago. [VERIFY: confirm Uruguay-specific account type — Mercado Pago Uruguay may have different API surface than Argentina]
 - The POC already has the MercadoPago public key configured in `.env.example` and mock routes planned
-- MercadoPago supports card payments, split payments (Marketplace API), and webhooks — all required for the commission split between PLUG UY and charger owners
+- MercadoPago supports card payments, split payments (Marketplace API), and webhooks — all required for the commission split between Prosepac and charger owners
 - MercadoPago's Marketplace/Split API allows charging a user's card and automatically routing a percentage to the charger owner's sub-account, which is exactly the `platform cut + owner split` model in requirements
 
 **Java SDK:**
@@ -243,7 +243,7 @@ This is the biggest open question (explicitly flagged in PROJECT.md as a blockin
 
 2. **Frontend WebSocket (app/admin ↔ backend):** STOMP over WebSocket or Server-Sent Events (SSE). Pushes charger status changes to connected clients. Higher connection count (one per active user session).
 
-**Scale consideration:** 500 concurrent charging sessions does NOT mean 500 OCPP connections necessarily. It means 500 active sessions across however many chargers exist. If PLUG UY has 50 chargers, you have 50 OCPP WebSocket connections and potentially 500 app users polling or subscribing. Spring handles both comfortably on a single instance with Java 21 virtual threads.
+**Scale consideration:** 500 concurrent charging sessions does NOT mean 500 OCPP connections necessarily. It means 500 active sessions across however many chargers exist. If Prosepac has 50 chargers, you have 50 OCPP WebSocket connections and potentially 500 app users polling or subscribing. Spring handles both comfortably on a single instance with Java 21 virtual threads.
 
 **NOT recommended:** Apache Kafka or RabbitMQ for MVP. Message brokers are justified when you horizontally scale the backend across multiple instances. At 500 sessions on a single well-tuned JVM instance with Java 21 virtual threads, a broker adds operational complexity with no benefit. Revisit at Fase 2 if scaling beyond a single instance.
 
@@ -314,7 +314,7 @@ The POC already has Prometheus + Grafana + Loki. These additions are needed for 
 |------------|----------|---------|
 | Keycloak | Auth | Operational overhead too high for 2-3 person team at MVP scale |
 | Kafka / RabbitMQ | Messaging | Not justified at 500 sessions single-instance |
-| CitrineOS | OCPP | OCPP 2.0.1 only; PLUG UY hardware is OCPP 1.6 |
+| CitrineOS | OCPP | OCPP 2.0.1 only; Prosepac hardware is OCPP 1.6 |
 | SteVe (as embedded library) | OCPP | Full application, not embeddable in hexagonal arch |
 | MongoDB | Database | Relational model fits domain; JSONB in PostgreSQL handles flexible parts |
 | dLocal | Payments | Cross-border specialist, overkill for domestic Uruguay |
@@ -465,7 +465,7 @@ npx expo install @stripe/stripe-react-native
 5. **[VERIFY] Firebase Admin SDK Java latest** — Check Maven Central for `com.google.firebase:firebase-admin` current version
 6. **[VERIFY] react-native-mercadopago-px + Expo 54** — Check if MercadoPago's React Native SDK supports Expo 54 managed workflow without ejection
 7. **[VERIFY] Spring Boot version upgrade** — Confirm 3.2.0 → 3.3.x is a safe upgrade path for existing hexagonal arch (generally yes, but verify WebSocket API changes)
-8. **[VERIFY] OCPP 1.6 vs 1.6J** — PLUG UY hardware may use OCPP 1.6J (JSON) or 1.6S (SOAP). Almost certainly JSON, but confirm with hardware specs.
+8. **[VERIFY] OCPP 1.6 vs 1.6J** — Prosepac hardware may use OCPP 1.6J (JSON) or 1.6S (SOAP). Almost certainly JSON, but confirm with hardware specs.
 
 ---
 

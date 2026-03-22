@@ -42,9 +42,9 @@ Progress: [░░░░░░░░░░] 0%
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- [Pre-roadmap]: OCPP 1.6 — not negotiable, dictated by PLUG UY hardware
-- [Pre-roadmap]: Only admin registers chargers in MVP (explicit PLUG UY feedback)
-- [Pre-roadmap]: QR code descoped from MVP by PLUG UY
+- [Pre-roadmap]: OCPP 1.6 — not negotiable, dictated by Prosepac hardware
+- [Pre-roadmap]: Only admin registers chargers in MVP (explicit Prosepac feedback)
+- [Pre-roadmap]: QR code descoped from MVP by Prosepac
 - [Pre-roadmap]: Payment provider (Stripe vs MercadoPago) — UNRESOLVED, blocks Phase 1
 
 ### Pending Todos
