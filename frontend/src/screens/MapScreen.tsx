@@ -255,6 +255,7 @@ const MapScreen = ({ navigation, route }: any) => {
               right: 16,
               backgroundColor: 'transparent',
               shadowColor: 'transparent',
+              elevation: 0,
             },
           ]}
         >

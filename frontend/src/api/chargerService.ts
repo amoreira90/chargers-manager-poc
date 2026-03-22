@@ -27,7 +27,9 @@ const mapStatus = (status: string): ChargerStation['availability'] => {
 const mapToChargerStation = (charger: ChargerApiResponse): ChargerStation => {
   // Distribuir tipos de conectores basado en el ID del cargador de forma determinística
   const connectorTypes: Array<ChargerStation['connectorType']> = ['CCS', 'CHAdeMO', 'Type2'];
-  const connectorIndex = parseInt(charger.id, 10) % connectorTypes.length;
+  // Hash determinístico del ID (funciona con UUIDs y IDs numéricos)
+  const hash = charger.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const connectorIndex = hash % connectorTypes.length;
   const connectorType = connectorTypes[connectorIndex] || 'CCS';
 
   return {

@@ -247,6 +247,9 @@ const ChargingDetailScreen = ({ route, navigation }: any) => {
   };
 
   const handleSkipQR = () => {
+    // Guard: solo ejecutar si estamos en estado idle
+    if (machineStatus !== 'idle') return;
+    
     const skippedQRData = `QR-OMITIDO-${charger.id}`;
     setScannedQRCode(skippedQRData);
     setMachineStatus('scanned');
