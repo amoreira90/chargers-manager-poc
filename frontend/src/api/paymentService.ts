@@ -18,14 +18,10 @@ export const paymentService = {
 
   /**
    * Retiene fondos en el método de pago del usuario ANTES de iniciar la carga.
-   *
-   * Backend según proveedor:
-   * - MercadoPago: POST /v1/payments con { capture: false }
-   * - Stripe (Google/Apple Pay): PaymentIntent con capture_method: 'manual'
    */
   preAuthorize: async (params: {
     chargerId: string;
-    paymentMethod: 'mercadopago' | 'google_pay' | 'apple_pay';
+    paymentMethod: 'mercadopago';
     maxAmount: number;
     paymentToken?: string;
     paymentMethodId?: string;
@@ -54,10 +50,8 @@ export const paymentService = {
   /**
    * Captura (cobra) el monto real consumido de una pre-autorización existente.
    * El monto capturado debe ser <= al monto autorizado.
-   *
-   * Backend según proveedor:
-   * - MercadoPago: PUT /v1/payments/{id} con { capture: true, transaction_amount }
-   * - Stripe: POST /v1/payment_intents/{id}/capture con amount_to_capture
+   * Backend (Mercado Pago): PUT /v1/payments/{id} con
+   * { capture: true, transaction_amount }.
    */
   capturePayment: async (preAuthId: string, actualAmount: number, sessionId: string) => {
     if (USE_MOCK) {
@@ -149,30 +143,6 @@ export const paymentService = {
     return response.data;
   },
 
-  processPaymentWithGooglePay: async (sessionId: string, token: string) => {
-    if (USE_MOCK) {
-      await delay(1500);
-      return { paymentId: `pay_gp_${Date.now()}`, status: 'completed' };
-    }
-    const response = await apiClient.post('/payments/google-pay', {
-      sessionId,
-      token,
-    });
-    return response.data;
-  },
-
-  processPaymentWithApplePay: async (sessionId: string, token: string) => {
-    if (USE_MOCK) {
-      await delay(1500);
-      return { paymentId: `pay_ap_${Date.now()}`, status: 'completed' };
-    }
-    const response = await apiClient.post('/payments/apple-pay', {
-      sessionId,
-      token,
-    });
-    return response.data;
-  },
-
   // ─────────────────────────────────────────────
   // HISTORIAL Y CONSULTAS
   // ─────────────────────────────────────────────
@@ -214,7 +184,7 @@ export const paymentService = {
     const response = await apiClient.get('/payments/methods');
     return response.data as {
       id: string;
-      type: 'mercadopago' | 'google_pay' | 'apple_pay';
+      type: 'mercadopago';
       label: string;
       lastFourDigits?: string;
       isDefault: boolean;

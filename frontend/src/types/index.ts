@@ -44,7 +44,7 @@ export interface Payment {
   amount: number;
   currency: string;
   status: 'pending' | 'authorized' | 'captured' | 'completed' | 'failed' | 'refunded';
-  paymentMethod: 'mercadopago' | 'google_pay' | 'apple_pay';
+  paymentMethod: 'mercadopago';
   timestamp: string;
 }
 
@@ -57,8 +57,8 @@ export interface PaymentPreAuth {
   capturedAmount?: number; // Monto real cobrado (después de captura)
   currency: string;
   status: 'pending' | 'authorized' | 'captured' | 'released' | 'failed';
-  paymentMethod: 'mercadopago' | 'google_pay' | 'apple_pay';
-  paymentToken?: string; // Token del método de pago (Google/Apple Pay)
+  paymentMethod: 'mercadopago';
+  paymentToken?: string; // Token del método de pago
   paymentMethodId?: string; // ID del método de pago (MercadoPago)
   gatewayReference: string; // Referencia del gateway (ID de transacción)
   authorizedAt: string;

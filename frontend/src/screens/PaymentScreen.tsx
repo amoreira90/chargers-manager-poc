@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Animated,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -18,7 +17,6 @@ const PaymentScreen = ({ route, navigation }: any) => {
   const insets = useSafeAreaInsets();
   const { colors, isDark } = useTheme();
   const { amount, sessionData, preAuth } = route.params;
-  const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(
     // Si viene con pre-auth capturado, ya está pagado
@@ -38,35 +36,6 @@ const PaymentScreen = ({ route, navigation }: any) => {
     }
   }, []);
 
-  const paymentMethods = [
-    {
-      id: 'mercadopago',
-      name: 'Mercado Pago',
-      icon: 'credit-card',
-      color: '#009EE3',
-    },
-    ...(Platform.OS === 'android'
-      ? [
-          {
-            id: 'google_pay',
-            name: 'Google Pay',
-            icon: 'google',
-            color: '#4285F4',
-          },
-        ]
-      : []),
-    ...(Platform.OS === 'ios'
-      ? [
-          {
-            id: 'apple_pay',
-            name: 'Apple Pay',
-            icon: 'apple',
-            color: '#000',
-          },
-        ]
-      : []),
-  ];
-
   const goToHome = () => {
     navigation.dispatch(
       CommonActions.reset({
@@ -77,8 +46,6 @@ const PaymentScreen = ({ route, navigation }: any) => {
   };
 
   const handlePayment = async () => {
-    if (!selectedMethod) return;
-
     try {
       setLoading(true);
       // Simular procesamiento de pago (2 segundos)
@@ -140,12 +107,7 @@ const PaymentScreen = ({ route, navigation }: any) => {
               </Text>
             )}
             <Text style={[styles.receiptLine, { color: colors.textTertiary }]}>
-              Método:{' '}
-              {preAuth.paymentMethod === 'mercadopago'
-                ? 'Mercado Pago'
-                : preAuth.paymentMethod === 'google_pay'
-                  ? 'Google Pay'
-                  : 'Apple Pay'}
+              Método: Mercado Pago
             </Text>
           </View>
         )}
@@ -226,37 +188,27 @@ const PaymentScreen = ({ route, navigation }: any) => {
           </View>
         </View>
 
-        {/* Payment Methods */}
+        {/* Payment Method */}
         <Text style={[styles.sectionTitle, { color: colors.text }]}>Método de Pago</Text>
 
-        {paymentMethods.map((method) => (
-          <TouchableOpacity
-            key={method.id}
-            style={[
-              styles.paymentMethodCard,
-              {
-                backgroundColor: colors.card,
-                borderColor: colors.border,
-                shadowColor: colors.shadow,
-              },
-              selectedMethod === method.id && {
-                borderColor: '#4CAF50',
-                backgroundColor: isDark ? '#1a2e1a' : '#f0f8f5',
-              },
-            ]}
-            onPress={() => setSelectedMethod(method.id)}
-          >
-            <View style={styles.paymentMethodContent}>
-              <View style={[styles.paymentMethodIcon, { backgroundColor: method.color }]}>
-                <MaterialCommunityIcons name={method.icon} size={24} color="#fff" />
-              </View>
-              <Text style={[styles.paymentMethodName, { color: colors.text }]}>{method.name}</Text>
+        <View
+          style={[
+            styles.paymentMethodCard,
+            {
+              backgroundColor: colors.card,
+              borderColor: '#4CAF50',
+              shadowColor: colors.shadow,
+            },
+          ]}
+        >
+          <View style={styles.paymentMethodContent}>
+            <View style={[styles.paymentMethodIcon, { backgroundColor: '#009EE3' }]}>
+              <MaterialCommunityIcons name="credit-card" size={24} color="#fff" />
             </View>
-            {selectedMethod === method.id && (
-              <MaterialCommunityIcons name="check-circle" size={24} color="#4CAF50" />
-            )}
-          </TouchableOpacity>
-        ))}
+            <Text style={[styles.paymentMethodName, { color: colors.text }]}>Mercado Pago</Text>
+          </View>
+          <MaterialCommunityIcons name="check-circle" size={24} color="#4CAF50" />
+        </View>
 
         {/* Security Notice */}
         <View style={[styles.securityNotice, { backgroundColor: isDark ? '#1a2e1a' : '#f0f8f5' }]}>
@@ -267,11 +219,7 @@ const PaymentScreen = ({ route, navigation }: any) => {
         </View>
 
         {/* Payment Button */}
-        <TouchableOpacity
-          style={[styles.payButton, !selectedMethod && styles.payButtonDisabled]}
-          onPress={handlePayment}
-          disabled={loading || !selectedMethod}
-        >
+        <TouchableOpacity style={styles.payButton} onPress={handlePayment} disabled={loading}>
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
@@ -433,9 +381,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 14,
     borderRadius: 8,
-  },
-  payButtonDisabled: {
-    opacity: 0.5,
   },
   payButtonText: {
     color: '#fff',
