@@ -24,19 +24,26 @@ const mapStatus = (status: string): ChargerStation['availability'] => {
 };
 
 // Campos que no vienen del backend se mockean con defaults
-const mapToChargerStation = (charger: ChargerApiResponse): ChargerStation => ({
-  id: charger.id,
-  name: charger.name,
-  location: {
-    latitude: charger.latitude,
-    longitude: charger.longitude,
-    address: charger.address,
-  },
-  availability: mapStatus(charger.status),
-  powerOutput: charger.powerKilowatts,
-  connectorType: 'CCS', // mock: no está en la BD
-  pricePerKwh: 2.5, // mock: no está en la BD
-});
+const mapToChargerStation = (charger: ChargerApiResponse): ChargerStation => {
+  // Distribuir tipos de conectores basado en el ID del cargador de forma determinística
+  const connectorTypes: Array<ChargerStation['connectorType']> = ['CCS', 'CHAdeMO', 'Type2'];
+  const connectorIndex = parseInt(charger.id, 10) % connectorTypes.length;
+  const connectorType = connectorTypes[connectorIndex] || 'CCS';
+
+  return {
+    id: charger.id,
+    name: charger.name,
+    location: {
+      latitude: charger.latitude,
+      longitude: charger.longitude,
+      address: charger.address,
+    },
+    availability: mapStatus(charger.status),
+    powerOutput: charger.powerKilowatts,
+    connectorType, // mock: varía según el ID del cargador
+    pricePerKwh: 2.5, // mock: no está en la BD
+  };
+};
 
 export const chargerService = {
   getAvailableChargers: async (): Promise<ChargerStation[]> => {
