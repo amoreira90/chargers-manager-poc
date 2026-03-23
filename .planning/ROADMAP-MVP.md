@@ -1,6 +1,6 @@
 # Roadmap MVP — Plataforma EVSE Prosepac
 **Inicio:** 24 de marzo 2026
-**Go-live estimado:** febrero 2027
+**Go-live estimado:** 10 de febrero 2027
 **Equipo:** 3 personas + Claude Code + herramientas IA
 **Carga horaria:** 2 horas/persona/día promedio · 5 días/semana = ~10h efectivas/persona/semana
 
@@ -63,7 +63,7 @@ Claude Code ayuda a recuperar contexto más rápido pero no elimina este costo.
 
 ## Scope MVP — requerimientos incluidos
 
-**70 requerimientos activos** distribuidos en 7 fases de desarrollo.
+**70 requerimientos activos** — 13 decisiones (DEC) cerradas, 57 requerimientos funcionales por implementar en 6 fases.
 
 | Módulo | En MVP | Fuera de MVP |
 |---|---|---|
@@ -83,27 +83,13 @@ Claude Code ayuda a recuperar contexto más rápido pero no elimina este costo.
 
 ## Fases y calendario
 
-### Fase 0 — Cierre de decisiones pendientes
-**Duración:** 2 semanas
-**Fechas:** 24/03/2026 → 05/04/2026
-
-La Fase 0 depende principalmente de la disponibilidad de Prosepac, no del tiempo de desarrollo.
-
-| Tarea | Responsable |
-|---|---|
-| Confirmar nombre de la plataforma con Prosepac | PL |
-| Confirmar modelo OCPP del hardware (1.6J WSS — ya probable) | PL + TL |
-| Confirmar disponibilidad MercadoPago Marketplace en Uruguay | TL + PL |
-| Definir modelo de comisión y cadencia de liquidación | PL + Prosepac |
-| Actualizar documentación con decisiones cerradas | DEV + Claude Code |
-
-**Entregable:** Todas las decisiones bloqueantes documentadas. Verde para Fase 1.
+> ✅ **Fase 0 — Decisiones cerradas** (marzo 2026). Todas las decisiones bloqueantes están resueltas en `Cierre_Decisiones.md`. Único pendiente: nombre de plataforma (DEC-12) — no bloquea código. El desarrollo arranca directamente en Fase 1.
 
 ---
 
 ### Fase 1 — Base de Datos y Autenticación
 **Duración:** 5 semanas
-**Fechas:** 06/04/2026 → 10/05/2026
+**Fechas:** 24/03/2026 → 28/04/2026
 
 Requerimientos: INF-01, INF-02, AUTH-01, AUTH-03, AUTH-04, AUTH-06, AUTH-08, CHRG-01, CHRG-02, CHRG-04, CHRG-05
 
@@ -119,7 +105,7 @@ Requerimientos: INF-01, INF-02, AUTH-01, AUTH-03, AUTH-04, AUTH-06, AUTH-08, CHR
 
 ### Fase 2 — Central System OCPP 1.6J
 **Duración:** 9 semanas *(era 12 — ahorradas 3 semanas gracias a SteVe)*
-**Fechas:** 11/05/2026 → 12/07/2026
+**Fechas:** 29/04/2026 → 30/06/2026
 
 Requerimientos: OCPP-01 al 09, INF-03, INF-04
 
@@ -138,50 +124,52 @@ Esta es la fase más crítica. El context switching en OCPP es costoso — cada 
 
 **Entregable:** Simulador OCPP conectado vía WSS. Ciclo completo (Boot → Start → MeterValues → Stop) funcionando y persistido.
 
-> **Hito crítico — semana 5** (~mediados de junio 2026): primer cargador conectado al backend vía OCPP.
+> **Hito crítico — semana 5** (~principios de junio 2026): primer cargador conectado al backend vía OCPP.
 
 ---
 
 ### Fase 3 — Ciclo de Vida de Sesiones y Precios
 **Duración:** 6 semanas
-**Fechas:** 13/07/2026 → 23/08/2026
+**Fechas:** 01/07/2026 → 11/08/2026
 
 Requerimientos: SESS-01 al 06, PRICE-01 al 06, NOTIF-05
 
 **Qué trae la POC:** `ChargingDetailScreen` ya tiene toda la UI y lógica simulada (máquina de estados, timer, kWh, costo). El trabajo es conectar con datos OCPP reales.
 
+**Complejidad adicional confirmada (Cierre_Decisiones):** PRICE-03 soporta **franjas horarias** — el precio por kWh varía según la banda horaria (ej. pico / valle / nocturno). El motor de precios debe consultar la franja activa al momento de la sesión. La reportería debe registrar la franja aplicada por transacción (requerimiento ADM-05).
+
 | Semanas | TL | DEV | PL |
 |---|---|---|---|
-| 1-3 | Máquina de estados de sesión en backend. Motor de precios server-side: bajada de bandera + precio por kWh + comisión configurable por cargador (PRICE-01 al 06). Cargadores gratuitos $0 sin transacción (PRICE-04). | Con Claude Code: reemplaza simulación de ChargingDetailScreen con llamadas reales a la API. kWh y costo en tiempo real (SESS-02). Precio estimado pre-sesión (PRICE-06). | Valida cálculos de precio con casos reales de Prosepac. Test inicio/parada desde app. |
-| 4-6 | Detención automática si vehículo desconecta (SESS-04). Resumen post-sesión (SESS-05). Push notification cuando vehículo queda inactivo (NOTIF-05). | Con Claude Code: historial de sesiones (SESS-06). Pantalla resumen post-sesión. Restauración de sesión activa tras reapertura de app. Tests. | Test del ciclo completo inicio → parada → resumen. UAT con Prosepac. Sign-off. |
+| 1-3 | Máquina de estados de sesión en backend. Motor de precios server-side: bajada de bandera + franjas horarias + precio por kWh + comisión configurable por cargador (PRICE-01 al 06). Cargadores gratuitos $0 sin transacción (PRICE-04). Modelo de franjas horarias en BD. | Con Claude Code: reemplaza simulación de ChargingDetailScreen con llamadas reales a la API. kWh y costo en tiempo real (SESS-02). Precio estimado con franja activa pre-sesión (PRICE-06). | Valida cálculos de precio con casos reales de Prosepac. Confirma bandas horarias concretas con Prosepac. Test inicio/parada desde app. |
+| 4-6 | Detención automática si vehículo desconecta (SESS-04). Resumen post-sesión con desglose de franja horaria (SESS-05). Push notification cuando vehículo queda inactivo (NOTIF-05). | Con Claude Code: historial de sesiones (SESS-06). Pantalla resumen post-sesión. Restauración de sesión activa tras reapertura de app. Tests. | Test del ciclo completo inicio → parada → resumen. UAT con Prosepac. Sign-off. |
 
-**Entregable:** Sesión real con datos OCPP. kWh y costo calculados en backend en tiempo real. Historial accesible.
+**Entregable:** Sesión real con datos OCPP. kWh y costo calculados en backend con franjas horarias. Historial accesible.
 
 ---
 
 ### Fase 4 — Integración de Pagos
 **Duración:** 8 semanas
-**Fechas:** 24/08/2026 → 18/10/2026
+**Fechas:** 12/08/2026 → 06/10/2026
 
 Requerimientos: PAY-01, PAY-02, PAY-03, PAY-05, PAY-06, PAY-07
 
 **Qué trae la POC:** `PreAuthPaymentScreen` y `PaymentScreen` con UI completa. `paymentService` estructurado.
 
+**Simplificación confirmada (Cierre_Decisiones DEC-04):** La liquidación es **mensual por cliente** — Prosepac cobra todo el dinero en su cuenta MercadoPago y distribuye a empresas manualmente una vez al mes. Esto elimina la necesidad de MercadoPago Marketplace (split automático por transacción). El flujo es: registro de tarjeta → pre-auth → captura post-StopTransaction → todo a la cuenta de Prosepac.
+
 | Semanas | TL | DEV | PL |
 |---|---|---|---|
-| 1-3 | Research MercadoPago SDK Java. Diseño de flujo: registro de método de pago (PAY-01) → pre-auth al inicio → captura DESPUÉS de StopTransaction.req (PAY-03, crítico). | Con Claude Code: integra SDK MercadoPago en PreAuthPaymentScreen. Setup sandbox. Pantalla de registro de tarjeta. | Coordina credenciales sandbox MercadoPago con Prosepac. Confirma disponibilidad Marketplace. |
+| 1-3 | Research MercadoPago SDK Java. Diseño de flujo simplificado: registro de método de pago (PAY-01) → pre-auth al inicio → captura DESPUÉS de StopTransaction.req (PAY-03, crítico). No se necesita Marketplace split. | Con Claude Code: integra SDK MercadoPago en PreAuthPaymentScreen. Setup sandbox. Pantalla de registro de tarjeta. | Coordina credenciales sandbox MercadoPago con Prosepac. |
 | 4-6 | Webhooks idempotentes + manejo de fallos de pago (PAY-06). Cobro automático post-sesión. Comprobante por email y en app (PAY-05). | Con Claude Code: PaymentScreen con cobro real. Email transaccional de comprobante. Tests del ciclo pago sandbox. | Test ciclo pago sandbox. Valida timing de cobro post-StopTransaction. |
 | 7-8 | Reembolsos parciales / totales desde panel admin (PAY-07). Code review módulo pagos. Estabilización. | Con Claude Code: gestión de reembolsos en panel admin. Tests de pagos fallidos y reintentos. | Test de reembolsos. Sign-off módulo pagos. |
 
-**Entregable:** Cobro real automático post-sesión, comprobante entregado, reembolsos operativos desde admin.
-
-> **Contingencia:** Si MercadoPago Marketplace no está disponible en Uruguay, distribución de fondos manual mensual por Prosepac. No bloquea go-live.
+**Entregable:** Cobro real automático post-sesión a cuenta Prosepac, comprobante entregado, reembolsos operativos desde admin.
 
 ---
 
 ### Fase 5 — Notificaciones
 **Duración:** 3 semanas
-**Fechas:** 19/10/2026 → 08/11/2026
+**Fechas:** 07/10/2026 → 27/10/2026
 
 Requerimientos: NOTIF-01, NOTIF-02, NOTIF-03
 
@@ -196,7 +184,7 @@ Requerimientos: NOTIF-01, NOTIF-02, NOTIF-03
 
 ### Fase 6 — Panel Admin, Panel Empresa y Observabilidad
 **Duración:** 8 semanas
-**Fechas:** 09/11/2026 → 03/01/2027
+**Fechas:** 28/10/2026 → 22/12/2026
 
 Requerimientos: ADM-01 al 08, OWN-01, OWN-02, INF-05, INF-06, INF-07
 
@@ -214,7 +202,7 @@ Requerimientos: ADM-01 al 08, OWN-01, OWN-02, INF-05, INF-06, INF-07
 
 ### Deploy y QA Final
 **Duración:** 7 semanas
-**Fechas:** 04/01/2027 → 21/02/2027
+**Fechas:** 23/12/2026 → 10/02/2027
 
 Requerimientos: INF-03 (ya en Fase 2), INF-07 (zero-downtime deployments)
 
@@ -235,15 +223,17 @@ Base: rama `feature/oci-deploy-config` ya iniciada.
 
 | Fase | Inicio | Fin | Semanas | Riesgo |
 |---|---|---|---|---|
-| 0 — Cierre de decisiones | 24/03/2026 | 05/04/2026 | 2 | Bajo |
-| 1 — DB y Autenticación | 06/04/2026 | 10/05/2026 | 5 | Bajo |
-| 2 — OCPP Central System | 11/05/2026 | 12/07/2026 | 9 | **Alto** |
-| 3 — Sesiones y Precios | 13/07/2026 | 23/08/2026 | 6 | Medio |
-| 4 — Pagos | 24/08/2026 | 18/10/2026 | 8 | **Alto** |
-| 5 — Notificaciones | 19/10/2026 | 08/11/2026 | 3 | Bajo |
-| 6 — Panel Admin y Observabilidad | 09/11/2026 | 03/01/2027 | 8 | Medio |
-| Deploy y QA Final | 04/01/2027 | 21/02/2027 | 7 | Medio |
-| **Total** | **24/03/2026** | **21/02/2027** | **~48 sem** | |
+| ~~0 — Cierre de decisiones~~ | ~~24/03/2026~~ | ~~28/03/2026~~ | ~~2~~ | ✅ Completada |
+| 1 — DB y Autenticación | 24/03/2026 | 28/04/2026 | 5 | Bajo |
+| 2 — OCPP Central System | 29/04/2026 | 30/06/2026 | 9 | **Alto** |
+| 3 — Sesiones y Precios | 01/07/2026 | 11/08/2026 | 6 | Medio |
+| 4 — Pagos | 12/08/2026 | 06/10/2026 | 8 | Medio* |
+| 5 — Notificaciones | 07/10/2026 | 27/10/2026 | 3 | Bajo |
+| 6 — Panel Admin y Observabilidad | 28/10/2026 | 22/12/2026 | 8 | Medio |
+| Deploy y QA Final | 23/12/2026 | 10/02/2027 | 7 | Medio |
+| **Total** | **24/03/2026** | **10/02/2027** | **~46 sem** | |
+
+*Fase 4 riesgo reducido a Medio: liquidación mensual confirmada elimina necesidad de Marketplace split automático.
 
 ---
 
@@ -251,14 +241,14 @@ Base: rama `feature/oci-deploy-config` ya iniciada.
 
 | Hito | Fecha estimada |
 |---|---|
-| Decisiones 100% cerradas | 05/04/2026 |
-| Auth real con 4 roles funcionando | 10/05/2026 |
-| Primer cargador conectado vía OCPP | ~mediados junio 2026 |
-| Ciclo OCPP completo con simulador | 12/07/2026 |
-| Sesión end-to-end con datos reales (sin pago) | 23/08/2026 |
+| ✅ Decisiones 100% cerradas | marzo 2026 |
+| Auth real con 4 roles funcionando | 28/04/2026 |
+| Primer cargador conectado vía OCPP | ~principios junio 2026 |
+| Ciclo OCPP completo con simulador | 30/06/2026 |
+| Sesión end-to-end con datos reales (sin pago) | 11/08/2026 |
 | Primer cobro real en sandbox | ~septiembre 2026 |
-| Feature complete | 03/01/2027 |
-| **Go-live producción** | **21/02/2027** |
+| Feature complete | 22/12/2026 |
+| **Go-live producción** | **10/02/2027** |
 
 ---
 
@@ -268,7 +258,7 @@ Base: rama `feature/oci-deploy-config` ya iniciada.
 |---|---|---|---|
 | Full time | 40h | 1x | junio 2026 |
 | 4h/día | 20h | 2x | septiembre 2026 |
-| **2h/día (actual)** | **10h** | **4x** | **febrero 2027** |
+| **2h/día (actual)** | **10h** | **4x** | **10 feb 2027** |
 | 1h/día | 5h | 8x | fines 2027 |
 
 ---
@@ -299,7 +289,7 @@ Base: rama `feature/oci-deploy-config` ya iniciada.
 
 - 2 horas por persona por día promedio, 5 días/semana (10h efectivas/persona/semana)
 - Prosepac provee hardware físico antes de enero 2027 (inicio de QA con hardware real)
-- Ficha técnica del cargador disponible en Fase 0 o primera semana de Fase 2
+- Ficha técnica del cargador disponible en la primera semana de Fase 2
 - MercadoPago Marketplace confirmado (o descartado con plan de contingencia) en Fase 0
 - Panel Admin es web app React separada del frontend mobile
 - Rama `feature/oci-deploy-config` como base del deploy en OCI
@@ -307,4 +297,4 @@ Base: rama `feature/oci-deploy-config` ya iniciada.
 ---
 
 *Creado: 2026-03-22*
-*Actualizado: 2026-03-22 — scope refinado con decisiones del equipo. 70 reqs activos. Fase 2 reducida 12→9 sem (SteVe). Go-live febrero 2027. 48 sem total.*
+*Actualizado: 2026-03-22 — Fase 0 eliminada (decisiones cerradas). Fase 2 reducida 12→9 sem (SteVe). Franjas horarias en PRICE-03. Pagos simplificados (liquidación mensual). Go-live 10 feb 2027. 46 sem total.*

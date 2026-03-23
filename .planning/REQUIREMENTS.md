@@ -7,19 +7,19 @@
 
 ### Fase 0 — Cierre de decisiones pre-desarrollo
 
-- [ ] **DEC-01**: Proveedor de pagos definido (Stripe vs MercadoPago) y disponibilidad de Marketplace API para Uruguay verificada con MercadoPago
-- [ ] **DEC-02**: Moneda de operación definida (pesos uruguayos vs dólares) con implicancias fiscales evaluadas (IVA, DGI e-factura)
-- [ ] **DEC-03**: Modelo de comisión definido: monto mínimo fijo + % fijo + decisión de tope máximo
-- [ ] **DEC-04**: Modelo de liquidación definido: por transacción vs mensual
-- [ ] **DEC-05**: Flujo de alta de cargadores confirmado: solo admin da de alta en MVP (requiere aprobación formal de Prosepac)
+- [x] **DEC-01**: MercadoPago confirmado. Billeteras virtuales = next steps (no MVP). Prosepac cobra todo y distribuye a empresas manualmente.
+- [x] **DEC-02**: Pesos uruguayos. Facturación electrónica DGI pendiente de evaluar (no bloquea MVP).
+- [x] **DEC-03**: Comisión configurable por cliente: combinaciones de monto mínimo, monto máximo y % por transacción. Prosepac configura por empresa.
+- [x] **DEC-04**: Liquidación mensual por cliente (una vez al mes). No se requiere split automático por transacción.
+- [x] **DEC-05**: Solo Admin (Prosepac) da de alta cargadores en MVP. Precio lo define Admin acordado con empresa propietaria.
 - [x] **DEC-06**: Jerarquía de roles definida — 4 roles: Admin (Prosepac), Veedor, Empresa, Usuario
-- [ ] **DEC-07**: Flujo de sesión abierta / manguera trabada definido: tiempo de gracia, monto de multa, flujo de notificaciones, RemoteStop automático
-- [ ] **DEC-08**: UX de estimación de precio pre-sesión definida (sin % de batería conocido)
-- [ ] **DEC-09**: Decisión sobre billeteras digitales en MVP: sí o no
-- [ ] **DEC-10**: Alcance del Panel Propietario en MVP vs Fase 2 definido
-- [ ] **DEC-11**: Especificación Panel Admin: mapa o lista de cargadores, filtros, log por ID de cargador, reportes
-- [ ] **DEC-12**: Nombre de plataforma unificado (CARGÁ / Cargapp / PlugUY)
-- [ ] **DEC-13**: Confirmar variante OCPP del hardware de Prosepac: OCPP 1.6J (JSON/WebSocket) vs 1.6S (SOAP)
+- [x] **DEC-07**: Manguera trabada — tiempo de gracia configurable por cliente; vencido el plazo corre multa por minuto; distribución igual al resto de costos; la manguera NO se desconecta automáticamente. Implementación diferida a v2 (SESS-07).
+- [x] **DEC-08**: Pre-sesión muestra: bajada de bandera + precio por franja horaria activa + comisión Prosepac. No se puede estimar el total exacto (depende del kWh consumido).
+- [x] **DEC-09**: Billeteras digitales = next steps. No van en MVP.
+- [x] **DEC-10**: Panel Propietario MVP = OWN-01 (ver cargadores y estado) + OWN-02 (ver historial de sesiones).
+- [x] **DEC-11**: Panel Admin = ADM-01 al ADM-08. Reportería: consumo por nivel de usuario, asociado al momento de carga (franjas horarias), exportación CSV y Excel.
+- [ ] **DEC-12**: Nombre de plataforma unificado (CARGÁ / Cargapp / PlugUY) — pendiente. No bloquea desarrollo.
+- [x] **DEC-13**: OCPP 1.6J (JSON/WebSocket) confirmado. Ficha técnica del hardware pendiente — no bloquea desarrollo con simulador.
 
 ### Autenticación y Roles
 
@@ -61,7 +61,7 @@
 
 - [ ] **PRICE-01**: Precio base calculado por kWh consumido (meterStart/meterStop como fuente de verdad — NUNCA calculado en frontend)
 - [ ] **PRICE-02**: Sistema soporta cargo fijo de conexión ("bajada de bandera") adicional al precio por kWh
-- [ ] **PRICE-03**: Admin configura precio por kWh por cargador en nombre del propietario
+- [ ] **PRICE-03**: Admin configura precio por kWh por cargador — soporta franjas horarias (bandas de precio según hora del día, ej. pico / valle / nocturno)
 - [ ] **PRICE-04**: Sistema soporta cargadores gratuitos ($0) que no generan transacción de pago
 - [ ] **PRICE-05**: Sistema cobra comisión porcentual configurable por transacción paga (modelo definido en DEC-03)
 - [ ] **PRICE-06**: Precio total estimado de sesión visible para usuario ANTES de iniciarla (UX definida en DEC-08)

@@ -12,7 +12,7 @@ Partiendo del chargers-manager-poc como base, este roadmap evoluciona el codebas
 
 Las fases decimales aparecen entre sus enteros circundantes en orden numérico.
 
-- [ ] **Fase 0: Cierre de Decisiones** - Cerrar las 13 decisiones de negocio abiertas antes de escribir código
+- [x] **Fase 0: Cierre de Decisiones** - Cerrar las 13 decisiones de negocio abiertas antes de escribir código
 - [ ] **Fase 1: Base de Datos y Autenticación** - Migración a PostgreSQL, auth, roles, registro de cargadores, modelo de tarifas
 - [ ] **Fase 2: Central System OCPP** - Comunicación OCPP 1.6J bidireccional con cargadores físicos
 - [ ] **Fase 3: Ciclo de Vida de Sesiones y Precios** - Máquina de estados completa de sesión de carga con facturación en tiempo real
@@ -114,7 +114,7 @@ Las Fases 5 y 6 pueden comenzar una vez que la Fase 3 esté completa (la Fase 4 
 
 | Fase | Planes completados | Estado | Completada |
 |------|--------------------|--------|------------|
-| 0. Cierre de Decisiones | 0/TBD | No iniciada | - |
+| 0. Cierre de Decisiones | — | Completada | marzo 2026 |
 | 1. Base de Datos y Autenticación | 0/TBD | No iniciada | - |
 | 2. Central System OCPP | 0/TBD | No iniciada | - |
 | 3. Ciclo de Vida de Sesiones y Precios | 0/TBD | No iniciada | - |
@@ -126,7 +126,7 @@ Las Fases 5 y 6 pueden comenzar una vez que la Fase 3 esté completa (la Fase 4 
 
 Las siguientes fases requieren `/gsd:research-phase` antes de planificar:
 
-- **Fase 2 (Central System OCPP):** Versión actual de la librería Java-OCA-OCPP, handshake del subprotocolo OCPP en Spring WebSocket, comportamiento de buffer de mensajes offline, estrategia de idempotencia de transactionId
+- **Fase 2 (Central System OCPP):** ✅ Investigación completada — ver `.planning/research/OCPP-STEVE-ANALYSIS.md`. Usar `steve-master/` como referencia. `de.rwth.idsg:ocpp-jaxb` como dependencia. Patrones: `AbstractWebSocketEndpoint`, `IncomingPipeline`, `FutureResponseContextStore`.
 - **Fase 4 (Integración de Pagos):** Disponibilidad de la API Marketplace de MercadoPago para Uruguay (crítico — puede requerir cambio de arquitectura si no está disponible), ventana de expiración de preautorización, flujo OAuth de onboarding de vendedor en Marketplace, versión actual del SDK Java de MercadoPago
 
 Todas las demás fases usan patrones estándar y bien documentados y pueden proceder directamente a `/gsd:plan-phase`.

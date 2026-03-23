@@ -1,24 +1,30 @@
 # Comparación de Scope — MVP Original vs MVP 4 meses
 
 **Fecha:** 22 de marzo 2026
-**Restricción:** 2 horas/persona/día · equipo de 3 · máximo 4 meses calendario
+**Restricción:** 2 horas/persona/día · equipo de 3
+**Go-live real a 2h/día:** 10 de febrero 2027 (46 semanas)
 
 ---
 
 ## Resumen ejecutivo
 
-| | MVP Original | MVP 4 meses |
+| | MVP Completo | Hito 4 meses (jul 2026) |
 |---|---|---|
-| Requerimientos funcionales | 57 | 57 |
-| Diferidos a v2 | 0 | 4 |
-| Diferidos a fase 3 | 0 | 3 |
-| Go-live estimado (2h/día) | julio 2027 | **julio 2026** |
-| Tiempo ganado | — | **~12 meses** |
+| Requerimientos funcionales | 57 | 14 (Auth + OCPP) |
+| Go-live | **10/02/2027** (46 sem a 2h/día) | No es go-live — es hito técnico |
+| Qué entrega | Producto completo con pagos | Cargador conectado vía OCPP, sin pagos |
 
-El MVP de 4 meses mantiene el flujo principal intacto:
-> Un conductor encuentra un cargador, inicia una sesión y paga — Prosepac recibe su reporte mensual.
+**A 2h/día, 4 meses calendario = Fase 1 + Fase 2 únicamente.**
 
-Lo que se difiere son features operacionales avanzadas, no el núcleo del producto.
+El hito de 4 meses (fin de julio 2026) entrega:
+- ✅ Auth real con 4 roles
+- ✅ PostgreSQL + Redis + cargadores registrados
+- ✅ Central System OCPP 1.6J completo (BootNotification, Heartbeat, Start/StopTransaction, MeterValues, RemoteStart/Stop)
+- ❌ Sesiones de usuario desde app (Fase 3 — agosto 2026)
+- ❌ Pagos (Fase 4 — octubre 2026)
+- ❌ Panel Admin completo (Fase 6 — diciembre 2026)
+
+El flujo de valor central completo (conductor carga y paga) no está disponible hasta el go-live de febrero 2027.
 
 ---
 
