@@ -52,11 +52,10 @@ El sistema opera bajo el protocolo OCPP 1.6 para la comunicación con los cargad
 | ID | Requerimiento | Prioridad | Fase |
 |---|---|---|---|
 | AUTH-01 | El usuario puede registrarse con email y contraseña | MUST | MVP |
-| AUTH-02 | El usuario puede autenticarse con Google o Apple (OAuth 2.0) | MUST | MVP |
+| AUTH-02 | El usuario puede autenticarse con Google o Apple (OAuth 2.0) | MUST | Fase 2 |
 | AUTH-03 | El sistema soporta registro por invitación (link con token de acceso limitado) | SHOULD | Fase 2 |
 | AUTH-04 | El usuario puede recuperar su contraseña mediante email | MUST | MVP |
 | AUTH-05 | El sistema implementa roles: Usuario Final, Propietario Hogareño, Empresa/Parking, Administrador | MUST | MVP |
-| AUTH-06 | Un usuario puede tener múltiples roles simultáneamente (ej: conductor + propietario) | SHOULD | MVP |
 | AUTH-07 | El administrador puede suspender o eliminar cuentas de usuario | MUST | MVP |
 
 ### 3.2 Gestión de Cargadores
