@@ -71,13 +71,19 @@ Las fases decimales aparecen entre sus enteros circundantes en orden numérico.
 **Planes**: A definir
 
 ### Fase 4: Integración de Pagos
-**Objetivo**: Cada sesión paga completada carga automáticamente el método de pago guardado del usuario, distribuye los fondos entre plataforma y propietario, y entrega un comprobante de pago; los pagos fallidos se reintentan sin pérdida de datos
+**Objetivo**: Cada sesión paga completada cobra automáticamente al usuario vía Checkout Pro de MercadoPago, con pre-autorización al inicio y captura diferida post-StopTransaction; los pagos fallidos se reintentan sin pérdida de datos
 **Depende de**: Fase 3
 **Requisitos**: PAY-01, PAY-02, PAY-03, PAY-05, PAY-06, PAY-07
+**Decisiones técnicas (research MCP MercadoPago, marzo 2026):**
+  - Producto: Checkout Pro (no existe SDK nativo MP para React Native)
+  - API backend: Orders API (nueva) con flujo `waiting_capture`
+  - PAY-01 simplificado: Checkout Pro maneja medios de pago guardados del usuario
+  - Liquidación mensual por cliente (no se necesita Marketplace split)
+  - Medios de pago Uruguay: tarjeta crédito/débito, Abitab, Red Pagos, cuenta MP
 **Criterios de éxito** (qué debe ser VERDAD):
-  1. El usuario puede registrar un método de pago antes de su primera sesión paga; el método se almacena de forma segura vía el proveedor de pagos (no en servidores de la plataforma)
-  2. Después de que finaliza una sesión (StopTransaction.req confirmado), el usuario es cobrado automáticamente por el monto exacto de kWh; el cobro nunca ocurre antes de recibir StopTransaction.req
-  3. Los fondos se dividen automáticamente entre la plataforma y el propietario del cargador según el modelo de comisión configurado; el propietario puede ver sus ganancias
+  1. El usuario puede pagar vía Checkout Pro (redireccion a MP) usando tarjeta, cuenta MP o medios locales; MP maneja el registro de medios de pago
+  2. Después de que finaliza una sesión (StopTransaction.req confirmado), el backend captura automáticamente la Order por el monto exacto de kWh; el cobro nunca ocurre antes de recibir StopTransaction.req
+  3. Todo el dinero se acredita en la cuenta MP de Prosepac; la distribución a empresas es mensual y manual (no requiere Marketplace split)
   4. El usuario recibe un comprobante de pago por email y en la app inmediatamente después del cobro exitoso
   5. Si un pago falla o un webhook se retrasa, el sistema reintenta de forma idempotente y no cobra dos veces; el admin puede emitir reembolsos parciales o totales
 **Planes**: A definir
@@ -112,21 +118,25 @@ Las fases decimales aparecen entre sus enteros circundantes en orden numérico.
 Las fases se ejecutan en orden numérico: 0 → 1 → 2 → 3 → 4 → 5 → 6
 Las Fases 5 y 6 pueden comenzar una vez que la Fase 3 esté completa (la Fase 4 NO es un requisito previo para la Fase 5).
 
-| Fase | Planes completados | Estado | Completada |
-|------|--------------------|--------|------------|
+| Fase | Sprints | Estado | Estimado (Roadmap 2.0) |
+|------|---------|--------|------------------------|
 | 0. Cierre de Decisiones | — | Completada | marzo 2026 |
-| 1. Base de Datos y Autenticación | 0/TBD | No iniciada | - |
-| 2. Central System OCPP | 0/TBD | No iniciada | - |
-| 3. Ciclo de Vida de Sesiones y Precios | 0/TBD | No iniciada | - |
-| 4. Integración de Pagos | 0/TBD | No iniciada | - |
-| 5. Notificaciones y Resiliencia Offline | 0/TBD | No iniciada | - |
-| 6. Panel Admin, Panel Propietario y Observabilidad | 0/TBD | No iniciada | - |
+| 1. DB + Autenticacion | Sprint 1-2 | No iniciada | 24/03 -> 06/04/2026 (2 sem) |
+| 2. Central System OCPP | Sprint 3-5 | No iniciada | 07/04 -> 27/04/2026 (3 sem) |
+| 3. Sesiones y Precios | Sprint 6-7 | No iniciada | 28/04 -> 11/05/2026 (2 sem) |
+| 4. Pagos MercadoPago | Sprint 8-9 | No iniciada | 12/05 -> 25/05/2026 (2 sem) |
+| 5. Notificaciones | Sprint 8 | No iniciada | 12/05 -> 18/05/2026 (paralelo con Pagos) |
+| 6. Admin + Empresa + Observabilidad | Sprint 10-12 | No iniciada | 26/05 -> 15/06/2026 (3 sem) |
+| Deploy y QA Final | Sprint 13-15 | No iniciada | 16/06 -> 07/07/2026 (3 sem) |
+
+**Equipo:** 3 Sr Software Engineers, 25h/sem/persona, 75h/sem total.
+**Go-live:** 07/07/2026 (15 semanas). Detalle completo en `ROADMAP-MVP.md`.
 
 ## Indicadores de Investigación
 
 Las siguientes fases requieren `/gsd:research-phase` antes de planificar:
 
 - **Fase 2 (Central System OCPP):** ✅ Investigación completada — ver `.planning/research/OCPP-STEVE-ANALYSIS.md`. Usar `steve-master/` como referencia. `de.rwth.idsg:ocpp-jaxb` como dependencia. Patrones: `AbstractWebSocketEndpoint`, `IncomingPipeline`, `FutureResponseContextStore`.
-- **Fase 4 (Integración de Pagos):** Disponibilidad de la API Marketplace de MercadoPago para Uruguay (crítico — puede requerir cambio de arquitectura si no está disponible), ventana de expiración de preautorización, flujo OAuth de onboarding de vendedor en Marketplace, versión actual del SDK Java de MercadoPago
+- **Fase 4 (Integración de Pagos):** ✅ Investigación completada via MCP MercadoPago (marzo 2026). Checkout Pro elegido (no hay SDK nativo RN). Orders API con `waiting_capture` para pre-auth + captura diferida. Marketplace descartado (liquidación mensual). Quality checklist de MP requerido antes de producción.
 
 Todas las demás fases usan patrones estándar y bien documentados y pueden proceder directamente a `/gsd:plan-phase`.
