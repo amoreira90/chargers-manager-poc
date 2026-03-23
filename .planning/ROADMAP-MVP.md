@@ -1,6 +1,6 @@
 # Roadmap MVP — Plataforma EVSE Prosepac
 **Inicio:** 24 de marzo 2026
-**Go-live estimado:** marzo 2027
+**Go-live estimado:** febrero 2027
 **Equipo:** 3 personas + Claude Code + herramientas IA
 **Carga horaria:** 2 horas/persona/día promedio · 5 días/semana = ~10h efectivas/persona/semana
 
@@ -25,7 +25,7 @@ A 2h/día por persona la capacidad real es el **25% de una jornada completa (8h)
 | Horas efectivas por semana/persona | 40h | 10h | 0.25x |
 | Multiplicador de calendario | 1x | ~4x | — |
 | Go-live (scope completo original) | ago 2026 | jul 2027 | +11 meses |
-| Go-live (scope MVP refinado) | — | **mar 2027** | — |
+| Go-live (scope MVP refinado) | — | **feb 2027** | — |
 
 **Nota sobre context switching:** A 2h/día cada sesión arranca con 10-15 min de re-orientación.
 En módulos complejos (OCPP, pagos) el tiempo efectivo de producción por sesión es ~1.5-1.7h reales.
@@ -118,8 +118,8 @@ Requerimientos: INF-01, INF-02, AUTH-01, AUTH-03, AUTH-04, AUTH-06, AUTH-08, CHR
 ---
 
 ### Fase 2 — Central System OCPP 1.6J
-**Duración:** 12 semanas
-**Fechas:** 11/05/2026 → 02/08/2026
+**Duración:** 9 semanas *(era 12 — ahorradas 3 semanas gracias a SteVe)*
+**Fechas:** 11/05/2026 → 12/07/2026
 
 Requerimientos: OCPP-01 al 09, INF-03, INF-04
 
@@ -127,22 +127,24 @@ Esta es la fase más crítica. El context switching en OCPP es costoso — cada 
 
 **Recomendación:** Concentrar las 2h del TL en bloques continuos sin interrupciones durante esta fase.
 
+**Acelerador clave — SteVe:** `steve-master/` en el repo es un Central System OCPP 1.6J completo. Leer `.planning/research/OCPP-STEVE-ANALYSIS.md` antes de empezar. Los patrones de WebSocket handler, pipeline de mensajes, `FutureResponseContextStore` y la dependencia `de.rwth.idsg:ocpp-jaxb` están resueltos y se adoptan directamente. Esto elimina ~3 semanas de research.
+
 | Semanas | TL | DEV | PL |
 |---|---|---|---|
-| 1-3 | Research + arquitectura OCPP: librería Java-OCA-OCPP, diseño del WebSocket handler, estrategia de idempotencia de transactionId. Documenta antes de codear. | Instala y configura simulador (SteVe o OCPP-J simulator). Con Claude Code: scaffolding del módulo OCPP en estructura hexagonal existente. Define escenarios de test. | Consigue ficha técnica del cargador físico de Prosepac. Valida que es OCPP 1.6J WSS. |
-| 4-6 | WebSocket server WSS + OCPP Basic Auth (INF-04) + TLS 1.2+ (INF-03). BootNotification — registro y autenticación (OCPP-02). | Con Claude Code: Heartbeat + detección offline (OCPP-03). StatusNotification → Redis latencia <5s (OCPP-04). Extiende ChargerStatus en UI. | Conecta simulador. Valida BootNotification y transiciones de estado. |
-| 7-10 | StartTransaction — transactionId persiste a BD ANTES de conf (OCPP-05, crítico). MeterValues — acumulación kWh (OCPP-06). StopTransaction como fuente de verdad (OCPP-07). | Con Claude Code: RemoteStart/RemoteStop (OCPP-08). Reconexión sin pérdida de sesión activa (OCPP-09). Mapeo ocppChargePointId → UUID (CHRG-02). Tests de integración. | Test del ciclo completo con simulador. Valida persistencia de transactionId. |
-| 11-12 | Code review completo del módulo OCPP. Ajustes y estabilización. Documentación técnica del módulo. | Suite de tests de integración OCPP. Manejo de errores en UI. | Testing de aceptación. Sign-off del módulo OCPP. |
+| 1-2 | Leer `OCPP-STEVE-ANALYSIS.md`. Agregar `ocpp-jaxb` al pom.xml. Adaptar `AbstractWebSocketEndpoint` + `OcppWebSocketUpgrader` (Basic Auth) + `IncomingPipeline` al módulo OCPP hexagonal. | Configura SteVe como simulador OCPP 1.6J en Docker (ya está en el repo). Con Claude Code: scaffolding del módulo `ocpp/` en infrastructure. Define escenarios de test. | Consigue ficha técnica del cargador físico de Prosepac. Valida que es OCPP 1.6J WSS. |
+| 3-5 | BootNotification (OCPP-02). Heartbeat + `@Scheduled` job de detección offline (OCPP-03). StatusNotification → BD + Redis <5s (OCPP-04). WSS TLS 1.2+ (INF-03). OCPP Basic Auth (INF-04). | Con Claude Code: extiende `ChargerStatus` + UI estado en tiempo real. Mapeo `ocppChargePointId` → UUID (CHRG-02). Tests de integración BootNotification. | Conecta simulador. Valida BootNotification y transiciones de estado. |
+| 6-8 | StartTransaction — transactionId a BD ANTES de conf (OCPP-05, crítico). MeterValues — acumulación kWh en Redis (OCPP-06). StopTransaction como fuente de verdad (OCPP-07). RemoteStart/RemoteStop via `ChargePointCommandService` (OCPP-08). Reconexión sin pérdida de sesión (OCPP-09). | Con Claude Code: suite de tests de integración OCPP. Manejo de errores en UI. Pantalla detalle cargador con datos reales. | Test ciclo completo con simulador. Valida persistencia de transactionId. Valida latencia <5s. |
+| 9 | Code review completo del módulo OCPP. Ajustes y estabilización. Documentación técnica. | Bug fixes. Tests finales. | Testing de aceptación. Sign-off del módulo OCPP. |
 
 **Entregable:** Simulador OCPP conectado vía WSS. Ciclo completo (Boot → Start → MeterValues → Stop) funcionando y persistido.
 
-> **Hito crítico — semana 6** (~julio 2026): primer cargador conectado al backend vía OCPP.
+> **Hito crítico — semana 5** (~mediados de junio 2026): primer cargador conectado al backend vía OCPP.
 
 ---
 
 ### Fase 3 — Ciclo de Vida de Sesiones y Precios
 **Duración:** 6 semanas
-**Fechas:** 03/08/2026 → 13/09/2026
+**Fechas:** 13/07/2026 → 23/08/2026
 
 Requerimientos: SESS-01 al 06, PRICE-01 al 06, NOTIF-05
 
@@ -159,7 +161,7 @@ Requerimientos: SESS-01 al 06, PRICE-01 al 06, NOTIF-05
 
 ### Fase 4 — Integración de Pagos
 **Duración:** 8 semanas
-**Fechas:** 14/09/2026 → 08/11/2026
+**Fechas:** 24/08/2026 → 18/10/2026
 
 Requerimientos: PAY-01, PAY-02, PAY-03, PAY-05, PAY-06, PAY-07
 
@@ -179,7 +181,7 @@ Requerimientos: PAY-01, PAY-02, PAY-03, PAY-05, PAY-06, PAY-07
 
 ### Fase 5 — Notificaciones
 **Duración:** 3 semanas
-**Fechas:** 09/11/2026 → 29/11/2026
+**Fechas:** 19/10/2026 → 08/11/2026
 
 Requerimientos: NOTIF-01, NOTIF-02, NOTIF-03
 
@@ -194,7 +196,7 @@ Requerimientos: NOTIF-01, NOTIF-02, NOTIF-03
 
 ### Fase 6 — Panel Admin, Panel Empresa y Observabilidad
 **Duración:** 8 semanas
-**Fechas:** 30/11/2026 → 25/01/2027
+**Fechas:** 09/11/2026 → 03/01/2027
 
 Requerimientos: ADM-01 al 08, OWN-01, OWN-02, INF-05, INF-06, INF-07
 
@@ -212,7 +214,7 @@ Requerimientos: ADM-01 al 08, OWN-01, OWN-02, INF-05, INF-06, INF-07
 
 ### Deploy y QA Final
 **Duración:** 7 semanas
-**Fechas:** 26/01/2027 → 14/03/2027
+**Fechas:** 04/01/2027 → 21/02/2027
 
 Requerimientos: INF-03 (ya en Fase 2), INF-07 (zero-downtime deployments)
 
@@ -235,13 +237,13 @@ Base: rama `feature/oci-deploy-config` ya iniciada.
 |---|---|---|---|---|
 | 0 — Cierre de decisiones | 24/03/2026 | 05/04/2026 | 2 | Bajo |
 | 1 — DB y Autenticación | 06/04/2026 | 10/05/2026 | 5 | Bajo |
-| 2 — OCPP Central System | 11/05/2026 | 02/08/2026 | 12 | **Alto** |
-| 3 — Sesiones y Precios | 03/08/2026 | 13/09/2026 | 6 | Medio |
-| 4 — Pagos | 14/09/2026 | 08/11/2026 | 8 | **Alto** |
-| 5 — Notificaciones | 09/11/2026 | 29/11/2026 | 3 | Bajo |
-| 6 — Panel Admin y Observabilidad | 30/11/2026 | 25/01/2027 | 8 | Medio |
-| Deploy y QA Final | 26/01/2027 | 14/03/2027 | 7 | Medio |
-| **Total** | **24/03/2026** | **14/03/2027** | **~51 sem** | |
+| 2 — OCPP Central System | 11/05/2026 | 12/07/2026 | 9 | **Alto** |
+| 3 — Sesiones y Precios | 13/07/2026 | 23/08/2026 | 6 | Medio |
+| 4 — Pagos | 24/08/2026 | 18/10/2026 | 8 | **Alto** |
+| 5 — Notificaciones | 19/10/2026 | 08/11/2026 | 3 | Bajo |
+| 6 — Panel Admin y Observabilidad | 09/11/2026 | 03/01/2027 | 8 | Medio |
+| Deploy y QA Final | 04/01/2027 | 21/02/2027 | 7 | Medio |
+| **Total** | **24/03/2026** | **21/02/2027** | **~48 sem** | |
 
 ---
 
@@ -251,12 +253,12 @@ Base: rama `feature/oci-deploy-config` ya iniciada.
 |---|---|
 | Decisiones 100% cerradas | 05/04/2026 |
 | Auth real con 4 roles funcionando | 10/05/2026 |
-| Primer cargador conectado vía OCPP | ~julio 2026 |
-| Ciclo OCPP completo con simulador | 02/08/2026 |
-| Sesión end-to-end con datos reales (sin pago) | 13/09/2026 |
-| Primer cobro real en sandbox | ~octubre 2026 |
-| Feature complete | 25/01/2027 |
-| **Go-live producción** | **14/03/2027** |
+| Primer cargador conectado vía OCPP | ~mediados junio 2026 |
+| Ciclo OCPP completo con simulador | 12/07/2026 |
+| Sesión end-to-end con datos reales (sin pago) | 23/08/2026 |
+| Primer cobro real en sandbox | ~septiembre 2026 |
+| Feature complete | 03/01/2027 |
+| **Go-live producción** | **21/02/2027** |
 
 ---
 
@@ -266,7 +268,7 @@ Base: rama `feature/oci-deploy-config` ya iniciada.
 |---|---|---|---|
 | Full time | 40h | 1x | junio 2026 |
 | 4h/día | 20h | 2x | septiembre 2026 |
-| **2h/día (actual)** | **10h** | **4x** | **marzo 2027** |
+| **2h/día (actual)** | **10h** | **4x** | **febrero 2027** |
 | 1h/día | 5h | 8x | fines 2027 |
 
 ---
@@ -305,4 +307,4 @@ Base: rama `feature/oci-deploy-config` ya iniciada.
 ---
 
 *Creado: 2026-03-22*
-*Actualizado: 2026-03-22 — scope refinado con decisiones del equipo. 70 reqs activos. Go-live marzo 2027.*
+*Actualizado: 2026-03-22 — scope refinado con decisiones del equipo. 70 reqs activos. Fase 2 reducida 12→9 sem (SteVe). Go-live febrero 2027. 48 sem total.*
