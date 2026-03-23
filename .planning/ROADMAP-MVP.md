@@ -1,6 +1,6 @@
 # Roadmap MVP — Plataforma EVSE Prosepac
 **Inicio:** 24 de marzo 2026
-**Go-live estimado:** agosto / septiembre 2027
+**Go-live estimado:** marzo 2027
 **Equipo:** 3 personas + Claude Code + herramientas IA
 **Carga horaria:** 2 horas/persona/día promedio · 5 días/semana = ~10h efectivas/persona/semana
 
@@ -23,8 +23,9 @@ A 2h/día por persona la capacidad real es el **25% de una jornada completa (8h)
 | Concepto | Full time (8h/día) | 2h/día | Factor |
 |---|---|---|---|
 | Horas efectivas por semana/persona | 40h | 10h | 0.25x |
-| Multiplicador de calendario | 1x | ~4-4.5x | — |
-| Go-live (mismo alcance) | ago 2026 | ago-sep 2027 | +12 meses |
+| Multiplicador de calendario | 1x | ~4x | — |
+| Go-live (scope completo original) | ago 2026 | jul 2027 | +11 meses |
+| Go-live (scope MVP refinado) | — | **mar 2027** | — |
 
 **Nota sobre context switching:** A 2h/día cada sesión arranca con 10-15 min de re-orientación.
 En módulos complejos (OCPP, pagos) el tiempo efectivo de producción por sesión es ~1.5-1.7h reales.
@@ -38,158 +39,191 @@ Claude Code ayuda a recuperar contexto más rápido pero no elimina este costo.
 
 | Componente | Estado |
 |---|---|
-| Arquitectura hexagonal completa | Listo |
-| Agregado `Charger` con transiciones de estado | Listo |
-| Value objects, mappers, exception handler | Listos |
-| `LoggingAspect` + `MetricsAspect` + Prometheus + Grafana + Loki | **Listos** |
-| Docker Compose base | Listo |
-| Tests de dominio y servicio | Listos |
-| Auth, roles, JWT, PostgreSQL, Redis, OCPP, sesiones, pagos | **No existe** |
+| Arquitectura hexagonal completa | ✅ Listo |
+| Agregado `Charger` con transiciones de estado | ✅ Listo |
+| Value objects, mappers, exception handler | ✅ Listos |
+| `LoggingAspect` + `MetricsAspect` + Prometheus + Grafana + Loki | ✅ Listos |
+| Docker Compose base | ✅ Listo |
+| Tests de dominio y servicio | ✅ Listos |
+| Config base OCI deploy (`feature/oci-deploy-config`) | ✅ Iniciado |
+| Auth, roles, JWT, PostgreSQL, Redis, OCPP, sesiones, pagos | ❌ No existe |
 
 ### Frontend
 
 | Componente | Estado |
 |---|---|
-| Estructura React Native + Expo + navegación completa | Lista |
-| Todas las pantallas con UI real (Auth, Charging, Payment, History...) | **Listas** |
-| `ChargingDetailScreen` con máquina de estados, timer, kWh, animaciones | **Avanzada** (simulada) |
-| `AuthContext` (reducer + AsyncStorage) | Listo en estructura (mock user) |
-| Axios client + estructura de servicios | Lista |
-| Auth real, roles, push notifications, panel admin | **No existe** |
+| Estructura React Native + Expo + navegación completa | ✅ Lista |
+| Todas las pantallas con UI real (Auth, Charging, Payment, History...) | ✅ Listas |
+| `ChargingDetailScreen` con máquina de estados, timer, kWh, animaciones | ✅ Avanzada (simulada) |
+| `AuthContext` (reducer + AsyncStorage) | ✅ Listo en estructura (mock user) |
+| Axios client + estructura de servicios | ✅ Lista |
+| Auth real, roles, push notifications, panel admin | ❌ No existe |
+
+---
+
+## Scope MVP — requerimientos incluidos
+
+**70 requerimientos activos** distribuidos en 7 fases de desarrollo.
+
+| Módulo | En MVP | Fuera de MVP |
+|---|---|---|
+| Auth y Roles | AUTH-01, 03, 04, 06, 08 (5) | AUTH-02 OAuth → v2, AUTH-07 2FA → v2 |
+| Cargadores | CHRG-01, 02, 04, 05 (4) | CHRG-03/06/07 → fase 3 |
+| OCPP | OCPP-01 al 09 (9) | OCPP-10 reconciliación → v2 |
+| Sesiones | SESS-01 al 06 (6) | SESS-07 manguera trabada → descartado |
+| Precios | PRICE-01 al 06 (6) | — |
+| Pagos | PAY-01, 02, 03, 05, 06, 07 (6) | PAY-04 split auto → descartado, PAY-08 → v2 |
+| Notificaciones | NOTIF-01, 02, 03, 05 (4) | NOTIF-04 → v2 |
+| Panel Admin | ADM-01 al 08 (8) | — |
+| Panel Empresa | OWN-01, 02 (2) | — |
+| Infraestructura | INF-01 al 07 (7) | INF-08 load testing → v2 |
+| Decisiones Fase 0 | DEC-01 al 13 (13) | — |
 
 ---
 
 ## Fases y calendario
 
 ### Fase 0 — Cierre de decisiones pendientes
-**Duración:** 1-2 semanas
+**Duración:** 2 semanas
 **Fechas:** 24/03/2026 → 05/04/2026
 
-A 2h/día la Fase 0 no cambia mucho porque depende principalmente de la disponibilidad de Prosepac, no del tiempo de desarrollo.
+La Fase 0 depende principalmente de la disponibilidad de Prosepac, no del tiempo de desarrollo.
 
 | Tarea | Responsable |
 |---|---|
 | Confirmar nombre de la plataforma con Prosepac | PL |
-| Conseguir ficha técnica del modelo de cargador | PL |
+| Confirmar modelo OCPP del hardware (1.6J WSS — ya probable) | PL + TL |
 | Confirmar disponibilidad MercadoPago Marketplace en Uruguay | TL + PL |
+| Definir modelo de comisión y cadencia de liquidación | PL + Prosepac |
 | Actualizar documentación con decisiones cerradas | DEV + Claude Code |
 
-**Entregable:** Decisiones bloqueantes documentadas. Verde para Fase 1.
+**Entregable:** Todas las decisiones bloqueantes documentadas. Verde para Fase 1.
 
 ---
 
 ### Fase 1 — Base de Datos y Autenticación
-**Duración:** 8 semanas (2 semanas a full time × 4)
-**Fechas:** 06/04/2026 → 31/05/2026
+**Duración:** 5 semanas
+**Fechas:** 06/04/2026 → 10/05/2026
+
+Requerimientos: INF-01, INF-02, AUTH-01, AUTH-03, AUTH-04, AUTH-06, AUTH-08, CHRG-01, CHRG-02, CHRG-04, CHRG-05
 
 | Semanas | TL | DEV | PL |
 |---|---|---|---|
-| 1-2 | Migración H2 → PostgreSQL 16 + Flyway + Redis. Diseño del esquema de usuarios y roles. | Con Claude Code: genera migrations, entidades User/Role, mappers. Configura entornos. | Valida entornos dev/staging. |
-| 3-4 | JWT: registro, login, refresh token, revocación. | Con Claude Code: conecta AuthContext del frontend con auth real. Reemplaza mock user. | Testing de flujos auth básicos. |
-| 5-6 | OAuth Google + Apple. Recupero de contraseña. | Con Claude Code: pantallas OAuth, recupero de contraseña. Tests de integración. | Testing de OAuth en dispositivos reales. |
-| 7-8 | Sistema de 4 roles (Admin/Veedor/Empresa/Usuario) + multi-rol. Code review. | Con Claude Code: navegación condicional por rol. Tests de permisos. | Testing de roles y validación UAT. |
+| 1-2 | Migración H2 → PostgreSQL 16 + Flyway. Diseño del esquema: usuarios, roles (Admin/Veedor/Empresa/Usuario), cargadores. Redis. | Con Claude Code: genera migrations, entidades User/Role/Charger, mappers, configura entornos dev/staging. | Valida entornos. Coordina acceso a infra con Prosepac. |
+| 3-4 | JWT: registro, login, refresh token, revocación (AUTH-08). Guards por rol. | Con Claude Code: conecta AuthContext del frontend con auth real. Reemplaza mock user. Navegación condicional por rol. | Testing de flujos auth y roles en dispositivo real. |
+| 5 | Recupero de contraseña por email (AUTH-03). Alta/baja/suspensión de usuarios (AUTH-06). Code review. | Con Claude Code: pantalla recupero contraseña. Registro de cargadores desde admin (CHRG-01, CHRG-04, CHRG-05). Tests. | UAT: flujos auth completos. Sign-off. |
 
-**Entregable:** Auth real. PostgreSQL + Redis. H2 eliminado. 4 roles activos.
+**Entregable:** Auth real con 4 roles. PostgreSQL + Redis. H2 eliminado. Admin puede registrar cargadores.
 
 ---
 
 ### Fase 2 — Central System OCPP 1.6J
-**Duración:** 16 semanas (4 semanas a full time × 4)
-**Fechas:** 01/06/2026 → 20/09/2026
+**Duración:** 12 semanas
+**Fechas:** 11/05/2026 → 02/08/2026
 
-Esta es la fase más crítica y la que más sufre con 2h/día. El context switching en OCPP es costoso — cada sesión de 2h requiere retomar el estado del protocolo, los mensajes en vuelo y la lógica de reconexión.
+Requerimientos: OCPP-01 al 09, INF-03, INF-04
 
-**Recomendación:** Si es posible, intentar en estas semanas concentrar las 2h del TL en bloques continuos sin interrupciones — es donde más importa el foco sostenido.
+Esta es la fase más crítica. El context switching en OCPP es costoso — cada sesión de 2h requiere retomar el estado del protocolo, los mensajes en vuelo y la lógica de reconexión.
+
+**Recomendación:** Concentrar las 2h del TL en bloques continuos sin interrupciones durante esta fase.
 
 | Semanas | TL | DEV | PL |
 |---|---|---|---|
-| 1-3 | Research + arquitectura OCPP: librería Java-OCA-OCPP, diseño del WebSocket handler, estrategia de idempotencia. Documenta antes de codear. | Instala y configura simulador SteVe. Con Claude Code: scaffolding del módulo OCPP en estructura hexagonal existente. Define escenarios de test. | Coordina ficha técnica del cargador físico con Prosepac. |
-| 4-6 | WebSocket server WSS + OCPP Basic Auth + BootNotification. | Con Claude Code: Heartbeat + StatusNotification → Redis. Extiende ChargerStatus. Pantalla listado de cargadores con estado real. | Conecta simulador. Valida BootNotification y transiciones de estado. |
-| 7-10 | StartTransaction (transactionId a BD ANTES de conf). MeterValues acumulación kWh. | Con Claude Code: StopTransaction. Reconexión sin pérdida de sesión activa. Pantalla detalle cargador. | Test del ciclo completo con simulador. Valida persistencia de transactionId. |
-| 11-14 | RemoteStart/Stop. Manejo completo de reconexión. WSS TLS 1.2+. | Con Claude Code: suite de tests de integración OCPP. Manejo de errores en UI. | Stress test con simulador. Valida latencia < 5s. |
-| 15-16 | Code review completo del módulo OCPP. Ajustes y estabilización. | Documentación técnica del módulo con Claude Code. | Testing de aceptación. Sign-off. |
+| 1-3 | Research + arquitectura OCPP: librería Java-OCA-OCPP, diseño del WebSocket handler, estrategia de idempotencia de transactionId. Documenta antes de codear. | Instala y configura simulador (SteVe o OCPP-J simulator). Con Claude Code: scaffolding del módulo OCPP en estructura hexagonal existente. Define escenarios de test. | Consigue ficha técnica del cargador físico de Prosepac. Valida que es OCPP 1.6J WSS. |
+| 4-6 | WebSocket server WSS + OCPP Basic Auth (INF-04) + TLS 1.2+ (INF-03). BootNotification — registro y autenticación (OCPP-02). | Con Claude Code: Heartbeat + detección offline (OCPP-03). StatusNotification → Redis latencia <5s (OCPP-04). Extiende ChargerStatus en UI. | Conecta simulador. Valida BootNotification y transiciones de estado. |
+| 7-10 | StartTransaction — transactionId persiste a BD ANTES de conf (OCPP-05, crítico). MeterValues — acumulación kWh (OCPP-06). StopTransaction como fuente de verdad (OCPP-07). | Con Claude Code: RemoteStart/RemoteStop (OCPP-08). Reconexión sin pérdida de sesión activa (OCPP-09). Mapeo ocppChargePointId → UUID (CHRG-02). Tests de integración. | Test del ciclo completo con simulador. Valida persistencia de transactionId. |
+| 11-12 | Code review completo del módulo OCPP. Ajustes y estabilización. Documentación técnica del módulo. | Suite de tests de integración OCPP. Manejo de errores en UI. | Testing de aceptación. Sign-off del módulo OCPP. |
 
-**Entregable:** Simulador OCPP conectado. Ciclo completo funcionando y persistido.
+**Entregable:** Simulador OCPP conectado vía WSS. Ciclo completo (Boot → Start → MeterValues → Stop) funcionando y persistido.
 
-> **Hito crítico — semana 6** (~julio 2026): primer cargador conectado al backend via OCPP.
+> **Hito crítico — semana 6** (~julio 2026): primer cargador conectado al backend vía OCPP.
 
 ---
 
 ### Fase 3 — Ciclo de Vida de Sesiones y Precios
-**Duración:** 8 semanas (2 semanas a full time × 4)
-**Fechas:** 21/09/2026 → 15/11/2026
+**Duración:** 6 semanas
+**Fechas:** 03/08/2026 → 13/09/2026
 
-**Qué trae la POC:** `ChargingDetailScreen` ya tiene toda la UI y lógica simulada. El trabajo es conectar con datos OCPP reales.
+Requerimientos: SESS-01 al 06, PRICE-01 al 06, NOTIF-05
+
+**Qué trae la POC:** `ChargingDetailScreen` ya tiene toda la UI y lógica simulada (máquina de estados, timer, kWh, costo). El trabajo es conectar con datos OCPP reales.
 
 | Semanas | TL | DEV | PL |
 |---|---|---|---|
-| 1-3 | Máquina de estados de sesión en backend. Motor de precios: bajada de bandera + kWh + franjas horarias + comisión configurable. | Con Claude Code: reemplaza simulación de ChargingDetailScreen con llamadas reales a la API. Pantalla de resumen post-sesión. | Valida cálculos de precio con casos de Prosepac. |
-| 4-6 | Cargadores gratuitos ($0). Reconciliación de sesiones suspendidas. | Con Claude Code: historial de sesiones. Restauración de sesión activa tras reapertura de app. Tests. | Test del ciclo completo inicio → parada. |
-| 7-8 | Flujo manguera trabada: tiempo de gracia configurable + multa por minuto. | Con Claude Code: UI de aviso manguera trabada. Tests de multa. | Valida configurabilidad por cliente. UAT. |
+| 1-3 | Máquina de estados de sesión en backend. Motor de precios server-side: bajada de bandera + precio por kWh + comisión configurable por cargador (PRICE-01 al 06). Cargadores gratuitos $0 sin transacción (PRICE-04). | Con Claude Code: reemplaza simulación de ChargingDetailScreen con llamadas reales a la API. kWh y costo en tiempo real (SESS-02). Precio estimado pre-sesión (PRICE-06). | Valida cálculos de precio con casos reales de Prosepac. Test inicio/parada desde app. |
+| 4-6 | Detención automática si vehículo desconecta (SESS-04). Resumen post-sesión (SESS-05). Push notification cuando vehículo queda inactivo (NOTIF-05). | Con Claude Code: historial de sesiones (SESS-06). Pantalla resumen post-sesión. Restauración de sesión activa tras reapertura de app. Tests. | Test del ciclo completo inicio → parada → resumen. UAT con Prosepac. Sign-off. |
 
-**Entregable:** Sesión real con datos OCPP. kWh y costo calculados en backend en tiempo real.
+**Entregable:** Sesión real con datos OCPP. kWh y costo calculados en backend en tiempo real. Historial accesible.
 
 ---
 
 ### Fase 4 — Integración de Pagos
-**Duración:** 10 semanas (2.5 semanas a full time × 4)
-**Fechas:** 16/11/2026 → 24/01/2027
+**Duración:** 8 semanas
+**Fechas:** 14/09/2026 → 08/11/2026
+
+Requerimientos: PAY-01, PAY-02, PAY-03, PAY-05, PAY-06, PAY-07
 
 **Qué trae la POC:** `PreAuthPaymentScreen` y `PaymentScreen` con UI completa. `paymentService` estructurado.
 
 | Semanas | TL | DEV | PL |
 |---|---|---|---|
-| 1-3 | Research MercadoPago + SDK Java. Diseño de flujo pre-auth → captura + webhooks idempotentes. | Con Claude Code: integra SDK MercadoPago en PreAuthPaymentScreen. Setup sandbox. | Coordina credenciales sandbox con Prosepac. |
-| 4-6 | Pre-auth al inicio + captura post-StopTransaction. Split plataforma/empresa configurable. | Con Claude Code: PaymentScreen con cobro real. Email de comprobante. Panel ingresos Empresa. | Test ciclo pago sandbox. Valida timing de cobro. |
-| 7-8 | Webhooks: idempotencia, reintentos, fallos. Liquidación mensual. | Con Claude Code: tests de webhooks. Documentación. | Test de pagos fallidos. |
-| 9-10 | Reembolsos desde admin. Code review. Estabilización. | Con Claude Code: gestión de reembolsos en panel admin. Tests. | Test de reembolsos. Sign-off módulo. |
+| 1-3 | Research MercadoPago SDK Java. Diseño de flujo: registro de método de pago (PAY-01) → pre-auth al inicio → captura DESPUÉS de StopTransaction.req (PAY-03, crítico). | Con Claude Code: integra SDK MercadoPago en PreAuthPaymentScreen. Setup sandbox. Pantalla de registro de tarjeta. | Coordina credenciales sandbox MercadoPago con Prosepac. Confirma disponibilidad Marketplace. |
+| 4-6 | Webhooks idempotentes + manejo de fallos de pago (PAY-06). Cobro automático post-sesión. Comprobante por email y en app (PAY-05). | Con Claude Code: PaymentScreen con cobro real. Email transaccional de comprobante. Tests del ciclo pago sandbox. | Test ciclo pago sandbox. Valida timing de cobro post-StopTransaction. |
+| 7-8 | Reembolsos parciales / totales desde panel admin (PAY-07). Code review módulo pagos. Estabilización. | Con Claude Code: gestión de reembolsos en panel admin. Tests de pagos fallidos y reintentos. | Test de reembolsos. Sign-off módulo pagos. |
 
-**Entregable:** Cobro real, fondos distribuidos, comprobante entregado, reembolsos operativos.
+**Entregable:** Cobro real automático post-sesión, comprobante entregado, reembolsos operativos desde admin.
 
-> **Contingencia:** Si MercadoPago Marketplace no está disponible en Uruguay, distribución manual mensual por Prosepac. No bloquea go-live.
-
----
-
-### Fase 5 — Notificaciones y Resiliencia Offline
-**Duración:** 4 semanas (1 semana a full time × 4)
-**Fechas:** 25/01/2027 → 22/02/2027
-
-| Semanas | TL | DEV | PL |
-|---|---|---|---|
-| 1-2 | FCM server-side: todos los triggers (fin sesión, cobro, cargador offline, manguera trabada). Email transaccional. | Con Claude Code: setup FCM en app Android/iOS. UI de notificaciones en historial. | Test de notificaciones en dispositivos reales. |
-| 3-4 | Reconciliación de estado de sesión al reconectarse (backend). | Con Claude Code: restauración automática de sesión activa en app. Tests. | Test flujo offline → reconexión. Sign-off. |
-
-**Entregable:** Push notifications en todos los eventos críticos. App resiliente ante pérdida de conexión.
+> **Contingencia:** Si MercadoPago Marketplace no está disponible en Uruguay, distribución de fondos manual mensual por Prosepac. No bloquea go-live.
 
 ---
 
-### Fase 6 — Panel Admin, Panels Empresa/Veedor y Observabilidad
-**Duración:** 12 semanas (3 semanas a full time × 4)
-**Fechas:** 23/02/2027 → 17/05/2027
+### Fase 5 — Notificaciones
+**Duración:** 3 semanas
+**Fechas:** 09/11/2026 → 29/11/2026
 
-**Qué trae la POC:** AOP + Prometheus + Grafana + Loki ya configurados. La observabilidad del backend está. Fase 6 agrega el panel admin web y ajusta dashboards para producción.
+Requerimientos: NOTIF-01, NOTIF-02, NOTIF-03
 
 | Semanas | TL | DEV | PL |
 |---|---|---|---|
-| 1-3 | APIs de admin: estado en tiempo real, KPIs, bloquear/desbloquear, gestión usuarios. 2FA (TOTP). | Con Claude Code: Panel Admin web (React) — dashboard + KPIs + gestión usuarios + 2FA. | Valida con datos reales. Test operaciones admin. |
-| 4-6 | APIs de reportería: sesiones + ingresos con filtros + exportación CSV y Excel. Config planes de distribución. | Con Claude Code: reportes y exportación. Panel Veedor (multi-empresa). Tests. | Valida reportes. Confirma desglose por franja horaria. |
-| 7-9 | Panel Empresa APIs. Ajuste dashboards Grafana producción. Alertas anomalías en pagos. | Con Claude Code: Panel Empresa (cargadores, historial, ingresos). Documentación. | UAT de todos los panels con Prosepac. |
-| 10-12 | Health checks. Buffer para ajustes post-UAT. Code review final. | Bug fixes UAT. Pulido de UX. | Sign-off funcional completo. |
+| 1-2 | FCM server-side: triggers para fin de sesión (NOTIF-01), cobro exitoso (NOTIF-02), cargador offline (NOTIF-03). Email transaccional. | Con Claude Code: setup FCM en app Android/iOS. UI de notificaciones. Tests en dispositivos reales. | Test de notificaciones en Android e iOS reales. |
+| 3 | Ajustes y estabilización. Code review. | Bug fixes notificaciones. | Sign-off. |
 
-**Entregable:** Prosepac opera la plataforma. Panels de Empresa y Veedor operativos. Observabilidad lista para producción.
+**Entregable:** Push notifications en todos los eventos críticos del sistema.
+
+---
+
+### Fase 6 — Panel Admin, Panel Empresa y Observabilidad
+**Duración:** 8 semanas
+**Fechas:** 30/11/2026 → 25/01/2027
+
+Requerimientos: ADM-01 al 08, OWN-01, OWN-02, INF-05, INF-06, INF-07
+
+**Qué trae la POC:** AOP + Prometheus + Grafana + Loki ya configurados. La observabilidad del backend está. El trabajo es construir el panel admin y ajustar dashboards para producción.
+
+| Semanas | TL | DEV | PL |
+|---|---|---|---|
+| 1-3 | APIs de admin: estado en tiempo real de cargadores (ADM-01), KPIs globales (ADM-02), bloquear/desbloquear cargadores (ADM-03), gestión de usuarios (ADM-04), configuración de planes de distribución (ADM-07), detalle de sesión (ADM-08). | Con Claude Code: Panel Admin web (React) — dashboard + KPIs en tiempo real + gestión de usuarios + bloqueo de cargadores. | Valida con datos reales. Test operaciones de admin. |
+| 4-6 | APIs de reportería: exportación CSV/Excel con filtros (ADM-05). Log filtrable por ID de cargador vía Grafana/Loki (ADM-06 — POC ya lo tiene). APIs Panel Empresa (OWN-01, OWN-02). | Con Claude Code: reportes y exportación CSV. Panel Empresa (cargadores, historial de sesiones). Logs en Grafana. | Valida reportes con datos reales. UAT Panel Empresa con Prosepac. |
+| 7-8 | Health checks (INF-06). Logs estructurados producción (INF-05). Ajuste de dashboards Grafana para producción. Buffer para ajustes post-UAT. | Bug fixes UAT. Pulido de UX. Documentación. | UAT completo de todos los panels con Prosepac. Sign-off funcional. |
+
+**Entregable:** Prosepac opera la plataforma desde el panel admin. Panel Empresa operativo. Observabilidad lista para producción.
 
 ---
 
 ### Deploy y QA Final
-**Duración:** 10 semanas (2.5 semanas a full time × 4)
-**Fechas:** 18/05/2027 → 26/07/2027
+**Duración:** 7 semanas
+**Fechas:** 26/01/2027 → 14/03/2027
+
+Requerimientos: INF-03 (ya en Fase 2), INF-07 (zero-downtime deployments)
+
+Base: rama `feature/oci-deploy-config` ya iniciada.
 
 | Semanas | TL | DEV | PL |
 |---|---|---|---|
-| 1-3 | Infraestructura OCI producción: rolling deployments, SSL, secrets. (Base en `feature/oci-deploy-config`). Testing con hardware físico real de Prosepac. | Testing E2E automatizado. Security audit (OWASP top 10, OCPP auth, PCI). | Coordina hardware físico. Inicia publicación en App Store / Play Store. |
-| 4-6 | Load testing: 500 sesiones concurrentes + tuning PostgreSQL y Redis. Ajustes de issues con hardware real. | Bug fixing. Compatibilidad iOS/Android. Release candidate. | Gestiona feedback UAT final con Prosepac. |
-| 7-8 | Estabilización + monitoring activo + runbook. | Smoke testing en producción. | Sign-off con Prosepac. Coordinación go-live. |
-| 9-10 | Buffer para imprevistos del go-live. | — | — |
+| 1-2 | Infraestructura OCI producción: rolling deployments zero-downtime (INF-07), SSL/TLS, secrets management. Testing con hardware físico real de Prosepac. | Testing E2E automatizado. Security audit básico (OWASP top 10, OCPP auth). | Coordina hardware físico con Prosepac. Inicia proceso publicación App Store / Play Store. |
+| 3-4 | Ajustes con hardware físico real. Tuning PostgreSQL y Redis bajo carga real. Monitoreo activo con Grafana. | Bug fixing. Compatibilidad iOS/Android definitiva. Release candidate. | Gestiona feedback UAT final con Prosepac. |
+| 5-6 | Estabilización + runbook de operaciones. Capacitación a Prosepac. | Smoke testing en producción. | Sign-off formal con Prosepac. Coordinación go-live. |
+| 7 | Buffer para imprevistos del go-live. | — | — |
 
 **Entregable:** Sistema en producción estable. Runbook entregado a Prosepac.
 
@@ -200,14 +234,14 @@ Esta es la fase más crítica y la que más sufre con 2h/día. El context switch
 | Fase | Inicio | Fin | Semanas | Riesgo |
 |---|---|---|---|---|
 | 0 — Cierre de decisiones | 24/03/2026 | 05/04/2026 | 2 | Bajo |
-| 1 — DB y Autenticación | 06/04/2026 | 31/05/2026 | 8 | Bajo |
-| 2 — OCPP Central System | 01/06/2026 | 20/09/2026 | 16 | **Alto** |
-| 3 — Sesiones y Precios | 21/09/2026 | 15/11/2026 | 8 | Medio |
-| 4 — Pagos | 16/11/2026 | 24/01/2027 | 10 | **Alto** |
-| 5 — Notificaciones y Offline | 25/01/2027 | 22/02/2027 | 4 | Bajo |
-| 6 — Panels y Observabilidad | 23/02/2027 | 17/05/2027 | 12 | Medio |
-| Deploy y QA Final | 18/05/2027 | 26/07/2027 | 10 | Medio |
-| **Total** | **24/03/2026** | **26/07/2027** | **~70 sem** | |
+| 1 — DB y Autenticación | 06/04/2026 | 10/05/2026 | 5 | Bajo |
+| 2 — OCPP Central System | 11/05/2026 | 02/08/2026 | 12 | **Alto** |
+| 3 — Sesiones y Precios | 03/08/2026 | 13/09/2026 | 6 | Medio |
+| 4 — Pagos | 14/09/2026 | 08/11/2026 | 8 | **Alto** |
+| 5 — Notificaciones | 09/11/2026 | 29/11/2026 | 3 | Bajo |
+| 6 — Panel Admin y Observabilidad | 30/11/2026 | 25/01/2027 | 8 | Medio |
+| Deploy y QA Final | 26/01/2027 | 14/03/2027 | 7 | Medio |
+| **Total** | **24/03/2026** | **14/03/2027** | **~51 sem** | |
 
 ---
 
@@ -216,13 +250,13 @@ Esta es la fase más crítica y la que más sufre con 2h/día. El context switch
 | Hito | Fecha estimada |
 |---|---|
 | Decisiones 100% cerradas | 05/04/2026 |
-| Auth real + roles funcionando | 31/05/2026 |
-| Primer cargador conectado via OCPP | ~julio 2026 |
-| Ciclo OCPP completo con simulador | 20/09/2026 |
-| Sesión end-to-end con datos reales (sin pago) | 15/11/2026 |
-| Primer cobro real en sandbox | ~enero 2027 |
-| Feature complete | 17/05/2027 |
-| **Go-live producción** | **26/07/2027** |
+| Auth real con 4 roles funcionando | 10/05/2026 |
+| Primer cargador conectado vía OCPP | ~julio 2026 |
+| Ciclo OCPP completo con simulador | 02/08/2026 |
+| Sesión end-to-end con datos reales (sin pago) | 13/09/2026 |
+| Primer cobro real en sandbox | ~octubre 2026 |
+| Feature complete | 25/01/2027 |
+| **Go-live producción** | **14/03/2027** |
 
 ---
 
@@ -230,44 +264,45 @@ Esta es la fase más crítica y la que más sufre con 2h/día. El context switch
 
 | Dedicación | Horas/semana/persona | Multiplicador | Go-live estimado |
 |---|---|---|---|
-| Full time | 40h | 1x | agosto 2026 |
-| 4h/día | 20h | 2x | febrero 2027 |
-| **2h/día (actual)** | **10h** | **4x** | **julio 2027** |
-| 1h/día | 5h | 8x | 2028 |
+| Full time | 40h | 1x | junio 2026 |
+| 4h/día | 20h | 2x | septiembre 2026 |
+| **2h/día (actual)** | **10h** | **4x** | **marzo 2027** |
+| 1h/día | 5h | 8x | fines 2027 |
 
 ---
 
 ## Riesgos con 2h/día
 
-| Riesgo específico de baja dedicación | Impacto |
-|---|---|
-| Context switching: 10-15 min de re-orientación por sesión en OCPP | Fase 2 efectivamente más lenta que 4x |
-| Momentum: bugs difíciles de depurar en sesiones cortas | Puede bloquear días enteros sin avanzar |
-| Prosepac espera avances — con 2h/día los entregables visibles tardan meses | Riesgo de pérdida de confianza del cliente |
-| Dependencias: si TL está bloqueado, DEV no puede avanzar | Puede desperdiciar sesiones de 2h esperando |
+| Riesgo | Fase afectada | Impacto |
+|---|---|---|
+| Context switching: 10-15 min de re-orientación por sesión en OCPP | Fase 2 | Fase 2 efectivamente más lenta que 4x |
+| Momentum: bugs difíciles de depurar en sesiones cortas | Fase 2, Fase 4 | Puede bloquear días enteros sin avanzar |
+| Hardware físico: si Prosepac no lo provee a tiempo | Deploy + QA | Retrasa la validación final |
+| MercadoPago Marketplace no disponible en Uruguay | Fase 4 | Requiere distribución manual — no bloquea go-live |
+| Prosepac espera avances — hitos visibles cada 4-6 semanas | Todas | Riesgo de pérdida de confianza del cliente |
 
 ---
 
 ## Recomendaciones para trabajar a 2h/día eficientemente
 
-1. **Sesiones de TL bloqueadas**: en Fase 2 (OCPP), el TL debería tener las 2h sin interrupciones — es donde más importa el foco
-2. **Claude Code como punto de entrada**: empezar cada sesión leyendo el contexto con Claude Code en lugar de revisando código manualmente — recupera contexto más rápido
-3. **Tareas con resultado visible en 2h**: planificar cada sesión con un entregable concreto ("hoy termino el BootNotification handler") en lugar de trabajar en algo que no cierra
-4. **DEV y TL en paralelo**: cuando TL está en investigación/arquitectura, DEV trabaja en frontend — evitar dependencias que anulen sesiones
-5. **Considerar sprints de dedicación intensiva**: si es posible, una semana cada 2 meses a full time acelera significativamente las fases más complejas
+1. **Sesiones del TL sin interrupciones en Fase 2 y 4**: OCPP y pagos son donde más importa el foco sostenido
+2. **Claude Code como punto de entrada**: empezar cada sesión leyendo el contexto con Claude Code — recupera contexto más rápido que revisar código manualmente
+3. **Tareas con resultado visible en 2h**: planificar cada sesión con un entregable concreto ("hoy termino el BootNotification handler")
+4. **TL y DEV en paralelo**: cuando TL investiga/arquitectura, DEV trabaja en frontend — evitar dependencias que anulen sesiones
+5. **Sprints de dedicación intensiva**: una semana cada 2 meses a full time en las Fases 2 y 4 puede acortar el go-live hasta 6-8 semanas
 
 ---
 
 ## Supuestos
 
 - 2 horas por persona por día promedio, 5 días/semana (10h efectivas/persona/semana)
-- Si alguna semana hay más disponibilidad, las fases más complejas (OCPP, pagos) son las primeras candidatas a absorberla
-- Prosepac provee hardware físico antes de mayo 2027 (inicio de QA)
+- Prosepac provee hardware físico antes de enero 2027 (inicio de QA con hardware real)
 - Ficha técnica del cargador disponible en Fase 0 o primera semana de Fase 2
-- MercadoPago Marketplace confirmado (o descartado) en Fase 0
-- Panel Admin es web app React separada
+- MercadoPago Marketplace confirmado (o descartado con plan de contingencia) en Fase 0
+- Panel Admin es web app React separada del frontend mobile
+- Rama `feature/oci-deploy-config` como base del deploy en OCI
 
 ---
 
 *Creado: 2026-03-22*
-*Revisión: ajustar al cierre de cada fase según velocidad real del equipo*
+*Actualizado: 2026-03-22 — scope refinado con decisiones del equipo. 70 reqs activos. Go-live marzo 2027.*

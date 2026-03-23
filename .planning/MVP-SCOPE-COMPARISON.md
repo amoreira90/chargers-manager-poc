@@ -11,7 +11,7 @@
 |---|---|---|
 | Requerimientos funcionales | 57 | 57 |
 | Diferidos a v2 | 0 | 4 |
-| Diferidos a fase 3 | 0 | 4 |
+| Diferidos a fase 3 | 0 | 3 |
 | Go-live estimado (2h/día) | julio 2027 | **julio 2026** |
 | Tiempo ganado | — | **~12 meses** |
 
@@ -30,7 +30,7 @@ Lo que se difiere son features operacionales avanzadas, no el núcleo del produc
 |---|---|:---:|:---:|---|
 | AUTH-01 | Registro con email y contraseña | ✅ | ✅ | |
 | AUTH-03 | Recupero de contraseña por email | ✅ | ✅ | |
-| AUTH-04 | 4 roles: Admin / Veedor / Empresa / Usuario | ✅ | ⚠️ | 3 roles (Admin/Empresa/Usuario) — Veedor en fase 3 |
+| AUTH-04 | 4 roles: Admin / Veedor / Empresa / Usuario | ✅ | ✅ | |
 | AUTH-06 | Admin suspende / elimina usuarios | ✅ | ✅ | |
 | AUTH-08 | Tokens con expiración y revocación | ✅ | ✅ | |
 
@@ -175,7 +175,6 @@ Funcionalidades que requieren infraestructura de cargadores privados o seguridad
 
 | ID | Requerimiento |
 |---|---|
-| AUTH-04 (Veedor) | Rol Veedor — visibilidad agregada multi-empresa |
 | CHRG-03 | Cargador público / privado por invitación |
 | CHRG-06 | Propietario invita usuarios a cargadores privados |
 | CHRG-07 | Propietario revoca acceso de usuario invitado |

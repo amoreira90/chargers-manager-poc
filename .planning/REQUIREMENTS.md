@@ -161,10 +161,6 @@
 
 Funcionalidades que dependen de infraestructura de cargadores privados o seguridad avanzada. Sin fecha comprometida.
 
-### Roles avanzados
-
-- **AUTH-04 (Veedor)**: Rol Veedor — visibilidad agregada multi-empresa (grupo económico)
-
 ### Cargadores privados
 
 - **CHRG-03**: Cargador puede marcarse como público o privado (por invitación)
