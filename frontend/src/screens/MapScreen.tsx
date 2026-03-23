@@ -7,6 +7,7 @@ import {
   Alert,
   Linking,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -30,6 +31,8 @@ const getDistanceKm = (lat1: number, lon1: number, lat2: number, lon2: number): 
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 };
 
+type ConnectorFilter = 'all' | 'CCS' | 'CHAdeMO' | 'Type2';
+
 const MapScreen = ({ navigation, route }: any) => {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -38,6 +41,7 @@ const MapScreen = ({ navigation, route }: any) => {
   const [chargers, setChargers] = useState<ChargerStation[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCharger, setSelectedCharger] = useState<ChargerStation | null>(null);
+  const [selectedConnector, setSelectedConnector] = useState<ConnectorFilter>('all');
 
   const requestLocationPermission = async () => {
     try {
@@ -97,6 +101,12 @@ const MapScreen = ({ navigation, route }: any) => {
       });
     }
   };
+
+  // Filtrar cargadores según el conector seleccionado
+  const filteredChargers =
+    selectedConnector === 'all'
+      ? chargers
+      : chargers.filter((charger) => charger.connectorType === selectedConnector);
 
   const getDistanceText = (charger: ChargerStation): string | null => {
     if (!location) return null;
@@ -188,94 +198,131 @@ const MapScreen = ({ navigation, route }: any) => {
         longitudeDelta: 0.05,
       };
 
+  const centerButtonBottom = selectedCharger ? insets.bottom + 280 : insets.bottom + 16;
+
   return (
     <View style={styles.container}>
-      <MapView
-        style={styles.map}
-        provider={PROVIDER_GOOGLE}
-        initialRegion={initialRegion}
-        showsUserLocation
-        showsMyLocationButton={false}
-        zoomEnabled
-        scrollEnabled
-        pitchEnabled
-        rotateEnabled
-        ref={cameraRef}
-      >
-        {/* Marker de ubicación actual */}
-        {location && (
-          <Marker
-            coordinate={{
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-            }}
-            title="Tu ubicación"
-            pinColor="#1E90FF"
-          />
-        )}
+      {/* MapView */}
+      <View style={styles.mapContainer}>
+        <MapView
+          style={styles.map}
+          provider={PROVIDER_GOOGLE}
+          initialRegion={initialRegion}
+          showsUserLocation
+          showsMyLocationButton={false}
+          zoomEnabled
+          scrollEnabled
+          pitchEnabled
+          rotateEnabled
+          ref={cameraRef}
+          onPress={(event) => {
+            if (event.nativeEvent.action !== 'marker-press') {
+              setSelectedCharger(null);
+            }
+          }}
+        >
+          {/* Markers de cargadores */}
+          {filteredChargers.map((charger) => {
+            const isSelected = selectedCharger?.id === charger.id;
+            const markerColor =
+              charger.availability === 'available'
+                ? '#4CAF50'
+                : charger.availability === 'charging'
+                  ? '#FF9800'
+                  : '#f44336';
 
-        {/* Markers de cargadores */}
-        {chargers.map((charger) => {
-          const statusText =
-            charger.availability === 'available'
-              ? 'Disponible'
-              : charger.availability === 'charging'
-                ? 'En carga'
-                : 'Mantenimiento';
+            return (
+              <Marker
+                key={charger.id}
+                coordinate={{
+                  latitude: charger.location.latitude,
+                  longitude: charger.location.longitude,
+                }}
+                pinColor={isSelected ? colors.primary : markerColor}
+                onPress={() => handleChargerPress(charger)}
+              />
+            );
+          })}
+        </MapView>
 
-          return (
-            <Marker
-              key={charger.id}
-              coordinate={{
-                latitude: charger.location.latitude,
-                longitude: charger.location.longitude,
-              }}
-              title={charger.name}
-              description={`${statusText} • ${charger.powerOutput}kW ${charger.connectorType}\n$${charger.pricePerKwh}/kWh`}
-              pinColor={
-                charger.availability === 'available'
-                  ? '#4CAF50'
-                  : charger.availability === 'charging'
-                    ? '#FF9800'
-                    : '#f44336'
-              }
-              onPress={() => handleChargerPress(charger)}
-            />
-          );
-        })}
-      </MapView>
+        {/* Filtro de conectores - flotante */}
+        <View
+          style={[
+            styles.connectorFilterContainer,
+            {
+              top: insets.top + 12,
+              left: 16,
+              right: 16,
+              backgroundColor: 'transparent',
+              shadowColor: 'transparent',
+              elevation: 0,
+            },
+          ]}
+        >
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
+            {(['all', 'CCS', 'CHAdeMO', 'Type2'] as const).map((connector) => (
+              <TouchableOpacity
+                key={connector}
+                style={[
+                  styles.filterButton,
+                  {
+                    backgroundColor:
+                      selectedConnector === connector ? colors.primary : colors.background,
+                    borderColor: selectedConnector === connector ? colors.primary : colors.border,
+                  },
+                ]}
+                onPress={() => {
+                  setSelectedConnector(connector);
+                  setSelectedCharger(null);
+                }}
+              >
+                <Text
+                  style={[
+                    styles.filterButtonText,
+                    {
+                      color: selectedConnector === connector ? '#fff' : colors.text,
+                      fontWeight: selectedConnector === connector ? '600' : '500',
+                    },
+                  ]}
+                >
+                  {connector === 'all' ? 'Todos' : connector}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
 
-      {/* Custom center location button */}
-      <TouchableOpacity
-        style={[
-          styles.centerLocationButton,
-          {
-            top: insets.top + 16,
-            right: 16,
-            backgroundColor: colors.card,
-            shadowColor: colors.shadow,
-          },
-        ]}
-        onPress={() => {
-          if (location && cameraRef.current) {
-            cameraRef.current.animateToRegion({
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-              latitudeDelta: 0.05,
-              longitudeDelta: 0.05,
-            });
-          }
-        }}
-      >
-        <MaterialCommunityIcons name="crosshairs-gps" size={24} color={colors.primary} />
-      </TouchableOpacity>
+        {/* Custom center location button */}
+        <TouchableOpacity
+          style={[
+            styles.centerLocationButton,
+            {
+              bottom: centerButtonBottom,
+              right: 16,
+              backgroundColor: colors.card,
+              shadowColor: colors.shadow,
+            },
+          ]}
+          onPress={() => {
+            if (location && cameraRef.current) {
+              cameraRef.current.animateToRegion({
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+                latitudeDelta: 0.05,
+                longitudeDelta: 0.05,
+              });
+            }
+          }}
+        >
+          <MaterialCommunityIcons name="crosshairs-gps" size={24} color={colors.primary} />
+        </TouchableOpacity>
+      </View>
 
       {selectedCharger && (
         <View
           style={[
             styles.bottomCard,
             {
-              paddingBottom: insets.bottom + 12,
               backgroundColor: colors.card,
               shadowColor: colors.shadow,
             },
@@ -496,6 +543,41 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 5,
+    zIndex: 10,
+  },
+  mapContainer: {
+    flex: 1,
+    position: 'relative',
+  },
+  connectorFilterContainer: {
+    position: 'absolute',
+    height: 56,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 5,
+    zIndex: 5,
+  },
+  filterScroll: {
+    flex: 1,
+  },
+  filterButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginRight: 8,
+    borderWidth: 1.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  filterButtonText: {
+    fontSize: 13,
+    fontWeight: '500',
   },
 });
 

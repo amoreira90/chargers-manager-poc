@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -18,11 +17,7 @@ import { useTheme } from '../context/ThemeContext';
  * PreAuthPaymentScreen
  *
  * Se muestra ANTES de iniciar la carga. Retiene fondos en el método de pago
- * elegido para garantizar el cobro post-carga.
- *
- * Flujo backend por proveedor:
- * - MercadoPago: POST /v1/payments { capture: false } → retiene sin cobrar
- * - Stripe (Google/Apple Pay): PaymentIntent { capture_method: 'manual' }
+ * de Mercado Pago para garantizar el cobro post-carga.
  *
  * Al volver a ChargingDetail, pasa el preAuthId para que al finalizar
  * la carga se capture solo el monto real consumido.
@@ -32,60 +27,22 @@ const PreAuthPaymentScreen = ({ route, navigation }: any) => {
   const { colors, isDark } = useTheme();
   const { charger } = route.params;
 
-  const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   // Estimación de monto máximo: carga completa de 60 kWh (batería típica EV)
   const ESTIMATED_MAX_KWH = 60;
   const maxAmount = ESTIMATED_MAX_KWH * charger.pricePerKwh;
 
-  const paymentMethods = [
-    {
-      id: 'mercadopago',
-      name: 'Mercado Pago',
-      icon: 'credit-card' as const,
-      color: '#009EE3',
-      description: 'Tarjeta, cuenta MP o dinero en cuenta',
-    },
-    ...(Platform.OS === 'android'
-      ? [
-          {
-            id: 'google_pay' as const,
-            name: 'Google Pay',
-            icon: 'google' as const,
-            color: '#4285F4',
-            description: 'Pago rápido con Google',
-          },
-        ]
-      : []),
-    ...(Platform.OS === 'ios'
-      ? [
-          {
-            id: 'apple_pay' as const,
-            name: 'Apple Pay',
-            icon: 'apple' as const,
-            color: '#000',
-            description: 'Pago rápido con Face ID / Touch ID',
-          },
-        ]
-      : []),
-  ];
-
   const handlePreAuthorize = async () => {
-    if (!selectedMethod) return;
-
     try {
       setLoading(true);
 
-      // Llamada a la API de pre-autorización
-      // El backend se encarga del pasamanos con MercadoPago/Stripe según el método
+      // Llamada a la API de pre-autorización en Mercado Pago
       const result = await paymentService.preAuthorize({
         chargerId: charger.id,
-        paymentMethod: selectedMethod as 'mercadopago' | 'google_pay' | 'apple_pay',
+        paymentMethod: 'mercadopago',
         maxAmount,
-        // paymentToken y paymentMethodId vendrían del SDK nativo
-        // de Google Pay / Apple Pay / MercadoPago respectivamente.
-        // Por ahora se manejan en el backend con el método guardado del usuario.
+        // paymentMethodId puede venir del método guardado del usuario.
       });
 
       setLoading(false);
@@ -95,7 +52,7 @@ const PreAuthPaymentScreen = ({ route, navigation }: any) => {
         authorizedAmount: result.authorizedAmount,
         gatewayReference: result.gatewayReference,
         expiresAt: result.expiresAt,
-        paymentMethod: selectedMethod,
+        paymentMethod: 'mercadopago',
       };
 
       // Volver a ChargingDetail con toda la info necesaria.
@@ -198,46 +155,32 @@ const PreAuthPaymentScreen = ({ route, navigation }: any) => {
           </View>
         </View>
 
-        {/* Payment Methods */}
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>
-          Seleccioná tu método de pago
-        </Text>
+        {/* Método de pago (fijo) */}
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Método de pago</Text>
 
-        {paymentMethods.map((method) => (
-          <TouchableOpacity
-            key={method.id}
-            style={[
-              styles.paymentMethodCard,
-              {
-                backgroundColor: colors.card,
-                borderColor: colors.border,
-                shadowColor: colors.shadow,
-              },
-              selectedMethod === method.id && {
-                borderColor: '#1E90FF',
-                backgroundColor: isDark ? '#1a2533' : '#EBF5FB',
-              },
-            ]}
-            onPress={() => setSelectedMethod(method.id)}
-          >
-            <View style={styles.paymentMethodContent}>
-              <View style={[styles.paymentMethodIcon, { backgroundColor: method.color }]}>
-                <MaterialCommunityIcons name={method.icon} size={24} color="#fff" />
-              </View>
-              <View style={styles.paymentMethodTextContainer}>
-                <Text style={[styles.paymentMethodName, { color: colors.text }]}>
-                  {method.name}
-                </Text>
-                <Text style={[styles.paymentMethodDesc, { color: colors.textTertiary }]}>
-                  {method.description}
-                </Text>
-              </View>
+        <View
+          style={[
+            styles.paymentMethodCard,
+            {
+              backgroundColor: colors.card,
+              borderColor: '#1E90FF',
+              shadowColor: colors.shadow,
+            },
+          ]}
+        >
+          <View style={styles.paymentMethodContent}>
+            <View style={[styles.paymentMethodIcon, { backgroundColor: '#009EE3' }]}>
+              <MaterialCommunityIcons name="credit-card" size={24} color="#fff" />
             </View>
-            {selectedMethod === method.id && (
-              <MaterialCommunityIcons name="check-circle" size={24} color="#1E90FF" />
-            )}
-          </TouchableOpacity>
-        ))}
+            <View style={styles.paymentMethodTextContainer}>
+              <Text style={[styles.paymentMethodName, { color: colors.text }]}>Mercado Pago</Text>
+              <Text style={[styles.paymentMethodDesc, { color: colors.textTertiary }]}>
+                Tarjeta, cuenta MP o dinero en cuenta
+              </Text>
+            </View>
+          </View>
+          <MaterialCommunityIcons name="check-circle" size={24} color="#1E90FF" />
+        </View>
 
         {/* Security Notice */}
         <View style={[styles.securityNotice, { backgroundColor: isDark ? '#1a2e1a' : '#f0f8f5' }]}>
@@ -250,9 +193,9 @@ const PreAuthPaymentScreen = ({ route, navigation }: any) => {
 
         {/* Authorize Button */}
         <TouchableOpacity
-          style={[styles.authorizeButton, !selectedMethod && styles.authorizeButtonDisabled]}
+          style={styles.authorizeButton}
           onPress={handlePreAuthorize}
-          disabled={loading || !selectedMethod}
+          disabled={loading}
         >
           {loading ? (
             <ActivityIndicator color="#fff" />
@@ -264,14 +207,14 @@ const PreAuthPaymentScreen = ({ route, navigation }: any) => {
                 color="#fff"
                 style={{ marginRight: 8 }}
               />
-              <Text style={styles.authorizeButtonText}>Autorizar e Iniciar Carga</Text>
+              <Text style={styles.authorizeButtonText}>Aceptar e Iniciar Retención</Text>
             </>
           )}
         </TouchableOpacity>
 
         <Text style={[styles.disclaimerText, { color: colors.textTertiary }]}>
-          Al autorizar, aceptás que se retengan fondos de tu método de pago seleccionado. El cobro
-          final será por el consumo real de energía.
+          Al aceptar, se retendrán fondos en Mercado Pago. El cobro final será por el consumo real
+          de energía.
         </Text>
 
         <View style={styles.spacer} />
@@ -431,9 +374,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 6,
-  },
-  authorizeButtonDisabled: {
-    opacity: 0.5,
   },
   authorizeButtonText: {
     color: '#fff',
