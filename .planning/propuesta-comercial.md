@@ -2,14 +2,14 @@
 
 ## Plataforma de Gestion y Cobro para Cargadores de Vehiculos Electricos
 
-**Modelo de Monetizacion:** Comision por Transaccion + Minimo Mensual Constante
+**Modelo de Monetizacion:** Comision por Sesion — solo pagas cuando tu red genera trafico
 
 **Fecha:** Marzo 2026
 
 **Confidencial**
 
 **Preparado por:** [Tu Empresa / Tu Nombre]
-**Preparado para:** [Nombre del Cliente]
+**Preparado para:** Prosepac Movilidad Electrica
 
 ---
 
@@ -17,7 +17,9 @@
 
 La presente propuesta describe el desarrollo, implementacion y modelo de monetizacion de una plataforma integral de gestion y cobro para estaciones de carga de vehiculos electricos (EV). El software cubre el ciclo completo del negocio: desde que un conductor escanea un cargador hasta que el propietario recibe su liquidacion mensual.
 
-Proponemos un modelo sin costo inicial: nosotros invertimos el desarrollo completo de la plataforma — MVP y expansion v2 — y lo recuperamos mediante un minimo mensual fijo de **$2,750 USD** durante 24 meses, distribuido de forma constante e igualitaria. Al finalizar el contrato, el minimo baja a **$800 USD/mes** para cubrir unicamente costos operativos. Cualquier comision por volumen de cargas que supere esos valores es ganancia directa.
+El modelo de monetizacion se basa en **comision por sesion de carga**: sin costo inicial de desarrollo, sin cuota fija de software, sin gestion de infraestructura por parte del cliente. El proveedor financia el desarrollo completo de la plataforma — MVP y expansion v2 — y administra la infraestructura de produccion. A cambio, percibe un porcentaje sobre el valor de cada sesion procesada por la plataforma. Cuando el volumen de la red genera comisiones suficientes, el cliente no abona ningun monto adicional (*).
+
+(*) En los periodos en que las comisiones acumuladas del mes no alcancen el minimo operativo acordado, el cliente cubre la diferencia hasta ese valor. Ver seccion 3.
 
 ---
 
@@ -55,27 +57,28 @@ Proponemos un modelo sin costo inicial: nosotros invertimos el desarrollo comple
 ## 3. Modelo Comercial
 
 > **Propuesta de valor clave:**
-> Cero inversion inicial. Desarrollamos el MVP y la expansion v2 completos. El minimo mensual es fijo e igual durante los 24 meses — sin escaladas ni sorpresas. Al mes 25, el minimo baja a $800 USD para solo cubrir operacion.
+> Sin inversion inicial. Sin cuota fija de software. El cliente paga unicamente una comision sobre lo que ya esta cobrando por cada sesion de carga. La plataforma completa — desarrollo, infraestructura y operacion — esta financiada por el proveedor y se recupera a traves del volumen de la red.
 
 ### 3.1 Estructura de Precios
 
 | Concepto | Detalle |
 |---|---|
-| Comision por transaccion | Porcentaje sobre el valor de cada carga procesada |
-| Minimo mensual garantizado | Monto fijo mensual. Si las comisiones del mes lo superan, se cobra solo el total de comisiones. Si no lo alcanzan, el cliente paga la diferencia hasta el minimo. Nunca se suman ambos. |
+| Comision por sesion | Porcentaje aplicado sobre el **valor total de la sesion calculado por el motor de precios de la plataforma**: kWh consumidos × tarifa configurada + bajada de bandera. Si la configuracion del cargador incluye multa por no desconexion al completar la carga, dicho monto tambien integra la base de comision. Si la multa es $0, no genera comision adicional. Este valor es la base de comision independientemente de si la sesion genera cobro al usuario final. Las sesiones configuradas como gratuitas ($0 para el usuario) siguen generando comision calculada sobre su valor tarifario de referencia. La diferencia la absorbe el operador. |
 | Costo inicial de desarrollo | **$0 USD** — sin cobro por adelantado |
+| Infraestructura y operacion | **$0 USD adicionales** — financiada y administrada por el proveedor |
+
+(*) **Minimo mensual de referencia:** Al cierre de cada mes se acumulan todas las comisiones del periodo. Si ese total supera el minimo acordado, se factura unicamente el total de comisiones. Si no lo alcanza, el cliente abona la diferencia hasta ese valor. Ambos conceptos nunca se suman. El minimo esta disenado para operar como piso de proteccion — con el nivel de actividad de una red mediana (ver seccion 5), las comisiones lo superan con holgura.
 
 Todos los montos son netos. Se agrega **IVA 22%** sobre cada factura emitida segun normativa DGI Uruguay.
 
 ### 3.2 Estructura del Acuerdo
 
-| Periodo | Comision | Minimo Mensual (neto) | Minimo c/ IVA 22% | Proposito |
-|---|---|---|---|---|
-| **Meses 1-12** | 10% | **$2,750 USD** | $3,355 USD | Amortizacion MVP + inicio v2 |
-| **Meses 13-24** | 12% | **$2,750 USD** | $3,355 USD | Amortizacion v2 + operacion |
-| **Mes 25+ (renovacion)** | 15% | **$800 USD** | $976 USD | Solo costos operativos |
+| Periodo | Comision por sesion | (*) Minimo mensual |
+|---|---|---|
+| **Meses 1-36** | **12% IVA incluido** | $1,850 USD + IVA |
+| **Mes 37+ (renovacion)** | **12% IVA incluido** | $800 USD + IVA |
 
-El minimo es **identico en todos los meses del contrato**: $2,750 USD + IVA. No hay escalonamiento ni aceleracion. La inversion queda completamente amortizada al finalizar el mes 24.
+La comision es del **12% sobre el valor de cada sesion, IVA incluido**, y aplica de forma uniforme durante toda la vigencia del acuerdo y sus renovaciones.
 
 ---
 
@@ -124,61 +127,57 @@ El minimo es **identico en todos los meses del contrato**: $2,750 USD + IVA. No 
 |---|---|---|
 | Mano de obra | 2,000h × $25 USD/h | $50,000 |
 | Infraestructura de desarrollo | Staging MVP (4 meses) + v2 (12 meses) | $1,800 |
+| Infraestructura de produccion | OCI free tier + servicios auxiliares (36 meses, promedio $80/mes) | $2,880 |
 | Constitucion legal + certificaciones | SAS/SRL, tramites, CFE | $900 |
-| Contingencia (5%) | Riesgos de protocolo, integracion hardware | $2,500 |
-| **Subtotal directo** | | **$55,200** |
-| Provision IRAE sin exoneracion (~15% efectivo) | Ver seccion 5 | $9,800 |
-| **Total inversion** | | **$65,000 USD** |
+| Contingencia (5%) | Riesgos de protocolo, integracion hardware, infra | $2,800 |
+| **Subtotal directo** | | **$58,380** |
+| Provision IRPF (persona fisica, tasa progresiva ~11% efectivo sobre renta neta) | Ver seccion 6.2 | $7,000 |
+| **Total inversion** | | **$65,380 USD** |
 
-### 4.3 Amortizacion en 24 Meses
+### 4.3 Amortizacion en 36 Meses
 
 | Calculo | Valor |
 |---|---|
-| Inversion total | $65,000 USD |
-| Meses de contrato | 24 |
-| Minimo mensual necesario | $65,000 / 24 = **$2,708** |
-| Minimo acordado (con buffer $42/mes) | **$2,750 USD/mes** |
-| Total recuperado en 24 meses | $2,750 × 24 = **$66,000 USD** |
-| Buffer sobre inversion | +$1,000 USD |
+| Inversion total (desarrollo + infra produccion + legal + contingencia + IRPF) | $65,380 USD |
+| Meses de contrato | 36 |
+| Minimo mensual necesario | $65,380 / 36 = **$1,816** |
+| Minimo acordado (con buffer $34/mes) | **$1,850 USD/mes** |
+| Total recuperado en 36 meses | $1,850 × 36 = **$66,600 USD** |
+| Buffer sobre inversion | +$1,220 USD |
 
-> El minimo de $2,750 USD/mes cubre exactamente la amortizacion de la inversion total en 24 meses, con un buffer de $1,000 USD. Sin variaciones, sin escaladas.
+> El minimo de referencia de $1,850 USD/mes es el piso operativo del acuerdo. Con el nivel de actividad proyectado para una red mediana (ver seccion 5), las comisiones lo superan en los primeros meses de operacion real.
 
 ---
 
 ## 5. Proyeccion Financiera
 
-### 5.1 Recuperacion Garantizada (solo con minimos)
+### 5.1 Escenarios por Valor de Sesiones (comision 12% IVA incluido)
 
-| Periodo | Minimo/Mes | Ingreso Periodo | Acumulado | Estado |
-|---|---|---|---|---|
-| Meses 1-6 | $2,750 | $16,500 | $16,500 | Amortizacion |
-| Meses 7-12 | $2,750 | $16,500 | $33,000 | Amortizacion |
-| Meses 13-18 | $2,750 | $16,500 | $49,500 | Amortizacion |
-| Meses 19-24 | $2,750 | $16,500 | $66,000 | Amortizacion |
+La comision es 12% sobre el **valor tarifario calculado de todas las sesiones del mes** — incluyendo sesiones pagas y sesiones configuradas como gratuitas para el usuario.
 
-> **Inversion recuperada: Mes 24.** Exacto. Sin riesgo de shortfall.
+Asumiendo valor promedio de sesion de $300 UYU (~$7 USD) calculado por la plataforma:
 
-### 5.2 Escenarios con Volumen de Cargas (mes 13+, comision 12%)
+Asumiendo valor promedio de sesion de $300 UYU (~$7 USD) calculado por la plataforma:
 
-Precio promedio de carga: $300 UYU (~$7 USD). Comision 12% = ~$0.84 USD por carga.
-
-| Escenario | Cargas/Mes | Comision/Mes | vs Minimo $2,750 | Ingreso Real |
-|---|---|---|---|---|
-| Solo minimo | < 327 cargas | < $2,750 | Paga minimo | $2,750 |
-| Punto de umbral | 327 cargas (~11/dia) | = $2,750 | Igual al minimo | $2,750 |
-| Moderado | 600 cargas (~20/dia) | ~$5,040 | +$2,290 | $5,040 |
-| Optimista | 1,200 cargas (~40/dia) | ~$10,080 | +$7,330 | $10,080 |
-| Agresivo | 2,500 cargas (~83/dia) | ~$21,000 | +$18,250 | $21,000 |
-
-### 5.3 Proyeccion 24 Meses — Escenario Moderado
-
-| Periodo | Ingreso/Mes | Subtotal | Acumulado |
+| Escenario | Valor sesiones/mes | Comision 12% | Lo que abona el cliente |
 |---|---|---|---|
-| Meses 1-12 (10%, ~400 cargas/mes) | $2,750 (minimo) | $33,000 | $33,000 |
-| Meses 13-18 (12%, ~600 cargas/mes) | $5,040 | $30,240 | $63,240 |
-| Meses 19-24 (12%, ~800 cargas/mes) | $6,720 | $40,320 | $103,560 |
+| Red con baja actividad (*) | < $15,417 USD | < $1,850 | Minimo de $1,850 USD |
+| Umbral de cobertura | $15,417 USD (~2,202 sesiones avg $7) | = $1,850 | $1,850 USD (solo comision) |
+| Red activa — moderado | $30,000 USD (~143 sesiones/dia) | ~$3,600 | $3,600 USD (solo comision) |
+| Red activa — optimista | $60,000 USD (~286 sesiones/dia) | ~$7,200 | $7,200 USD (solo comision) |
+| Red activa — agresivo | $120,000 USD (~571 sesiones/dia) | ~$14,400 | $14,400 USD (solo comision) |
 
-En el escenario moderado, el ingreso total a 24 meses es **$103,560 USD** — un retorno del **59% sobre la inversion** una vez recuperados los $65,000.
+> El umbral a partir del cual el cliente paga unicamente comision es de **~2,202 sesiones/mes (~73/dia)**. Con una red de 50 cargadores eso representa 1.5 sesiones por cargador por dia — nivel de actividad muy bajo y facilmente alcanzable en los primeros meses de operacion.
+
+### 5.2 Proyeccion de Comisiones — Escenario Moderado (36 meses)
+
+| Periodo | Valor sesiones/mes | Comision 12% | Lo que abona el cliente |
+|---|---|---|---|
+| Meses 1-12 | En crecimiento | 12% | Comision o minimo segun volumen alcanzado |
+| Meses 13-24 | ~$30,000 USD | ~$3,600 | $3,600 (solo comision) |
+| Meses 25-36 | ~$50,000 USD | ~$6,000 | $6,000 (solo comision) |
+
+En el escenario moderado, una vez que la red alcanza su ritmo de operacion el cliente paga exclusivamente la comision sobre el volumen real — la misma tasa del primer dia al ultimo.
 
 ---
 
@@ -187,15 +186,17 @@ En el escenario moderado, el ingreso total a 24 meses es **$103,560 USD** — un
 ### 6.1 IVA (22%)
 
 - Tasa basica aplicable a todos los servicios digitales y de software en Uruguay.
-- El IVA lo paga el cliente adicional al minimo acordado. No afecta nuestro ingreso neto — se declara y deposita en DGI.
-- **Factura real del cliente:** $2,750 neto + $605 IVA = **$3,355 USD/mes total**.
+- La comision del 12% por sesion es **IVA incluido**: el cliente paga exactamente ese porcentaje sobre el valor de cada sesion, sin conceptos adicionales. El proveedor declara y deposita el IVA correspondiente ante DGI.
+- El minimo mensual de referencia se factura como servicio separado: **$1,850 neto + $407 IVA = $2,257 USD/mes** en los casos en que aplica.
 
-### 6.2 IRAE (25%) y Exoneracion para Software
+### 6.2 IRPF (Impuesto a la Renta de las Personas Fisicas)
 
-- Tasa nominal: 25% sobre renta neta.
-- **Exoneracion total disponible (Ley 19.637):** empresas constituidas como SAS, SRL o SAU en Uruguay pueden quedar exoneradas de IRAE si mas del 50% de sus costos directos se incurren en territorio nacional.
-- **Sin exoneracion:** provision de ~$9,800 incluida en el calculo de inversion (ya contemplada en los $65,000).
-- **Con exoneracion:** esos $9,800 se convierten en margen adicional. Accion requerida: constituir SAS/SRL antes del primer ejercicio fiscal activo.
+- Aplica a personas fisicas que operan como unipersonales o prestadores independientes de servicios.
+- Categoria II — Trabajo fuera de relacion de dependencia. Tasa progresiva sobre renta neta.
+- **Escala 2026 (aproximada):** 0% hasta ~BPC 84/ano, luego 10%, 15%, 24%, 25%, 27%, 31%.
+- **Ventaja clave respecto a IRAE:** los costos reales del negocio (desarrollo, infraestructura, legal, contingencia) son deducibles antes de calcular la base imponible. En los primeros anios del contrato, la renta neta es baja o nula — el IRPF efectivo es minimo hasta que la inversion queda amortizada.
+- **Provision estimada en el calculo de inversion:** $7,000 USD sobre los 36 meses (~11% efectivo sobre renta neta proyectada acumulada, considerando que los anios 1-2 tienen alta carga de costos deducibles y el IRPF se concentra principalmente en el ano 3).
+- **Accion requerida:** inscripcion como unipersonal ante DGI y BPS. Los aportes BPS obligatorios para trabajadores independientes son un costo operativo adicional a contemplar (aproximadamente $150-300 USD/mes segun nivel de ingresos declarados) — verificar con asesor contable antes del inicio del contrato.
 
 ### 6.3 Facturacion Electronica (CFE)
 
@@ -214,45 +215,50 @@ MercadoPago descuenta su comision directamente del cobro recibido por Prosepac e
 
 ---
 
-## 7. Costos de Infraestructura (a cargo del cliente)
+## 7. Infraestructura de Produccion (Administrada y Financiada por el Proveedor)
 
-| Servicio | Proveedor recomendado | Costo Mensual |
+La infraestructura de produccion es responsabilidad exclusiva del proveedor. El cliente no gestiona ningun proveedor cloud, no recibe facturas de terceros y no asume riesgo de costos variables. Todo esta incluido en la estructura operativa del acuerdo.
+
+| Servicio | Proveedor | Costo Mensual (a cargo del Proveedor) |
 |---|---|---|
-| App server + load balancer | OCI free tier (ARM, 24GB RAM) | **$0** |
+| App server + load balancer | OCI free tier (ARM, 24GB RAM) | $0 |
 | PostgreSQL 16 | OCI / AWS RDS | $50-$100 |
 | Redis | OCI / AWS | $20-$40 |
-| Object storage | OCI free tier (20GB) | **$0-$10** |
-| Firebase push notifications | Firebase | **$0** |
-| Email transaccional | SendGrid free tier | **$0-$15** |
+| Object storage | OCI free tier (20GB) | $0-$10 |
+| Firebase push notifications | Firebase | $0 |
+| Email transaccional | SendGrid free tier | $0-$15 |
 | Dominio .com.uy | NIC Uruguay | ~$4/mes |
 | App Store fees | Google + Apple | ~$10/mes |
 
-| Escenario | Costo Mensual | Costo Anual |
+| Escenario operativo | Costo Mensual (Proveedor) | Como se financia |
 |---|---|---|
-| Minimo (OCI free tier maximizado) | **$80-$130** | $960-$1,560 |
-| Produccion recomendado | **$150-$250** | $1,800-$3,000 |
-| Alta disponibilidad | **$350-$550** | $4,200-$6,600 |
+| Inicial (OCI free tier maximizado) | $80-$130 | A cargo del proveedor |
+| Produccion recomendado | $150-$250 | A cargo del proveedor |
+| Alta disponibilidad | $350-$550 | A cargo del proveedor |
 
-> Oracle Cloud Infrastructure (OCI) ofrece un free tier permanente que incluye servidor principal, load balancer y 200GB de almacenamiento. Arquitectura disenada para maximizar este beneficio desde el dia 1.
+> Oracle Cloud Infrastructure (OCI) ofrece un free tier permanente que incluye servidor principal, load balancer y 200GB de almacenamiento. La arquitectura esta disenada para operar desde $0/mes en los primeros meses, creciendo en costo solo cuando el volumen de sesiones lo justifica — momento en que el excedente de comisiones lo cubre con holgura.
 
 ---
 
-## 8. Costo Total para el Cliente (24 meses)
+## 8. Costo Total para el Cliente (36 meses)
 
-| Concepto | Minimo | Moderado |
+La infraestructura de produccion esta a cargo del proveedor. El cliente abona unicamente la comision sobre el volumen de sesiones de su red — sin costos adicionales de cloud ni sorpresas operativas.
+
+| Concepto | Escenario bajo actividad (*) | Escenario red activa |
 |---|---|---|
-| Minimos garantizados (neto) | $66,000 | $66,000-$103,560 |
-| IVA sobre minimos/comisiones (22%) | $14,520 | $14,520-$22,783 |
-| Infraestructura cloud (24 meses) | $1,920 | $3,600 |
-| **Total 24 meses** | **~$82,440** | **~$84,120-$129,943** |
+| Comisiones acumuladas 36 meses (neto) | $66,600 | $66,600-$137,400 |
+| IVA (22%) | $14,652 | $14,652-$30,228 |
+| **Total abonado 36 meses** | **$81,252** | **$81,252-$167,628** |
 
-Comparacion:
+(*) En el escenario de baja actividad, el cliente cubre el minimo de referencia todos los meses. En cuanto el volumen de sesiones supera el umbral de cobertura, deja de aplicar y el cliente paga exclusivamente comision.
 
-| Modelo | Desembolso ano 1 | Costo total 24 meses | Riesgo |
+Comparacion con alternativas de desarrollo:
+
+| Modelo | Desembolso ano 1 | Costo total 36 meses | Riesgo |
 |---|---|---|---|
-| Desarrollo clasico a precio fijo | $65,000 upfront + IVA | ~$95,000-$110,000 | Muy alto |
-| Freelancers (mercado) | $40,000-$60,000 + riesgo calidad | ~$80,000-$120,000 | Alto |
-| **Esta propuesta** | **$0 upfront** | **~$82,000-$130,000** | **Bajo** |
+| Desarrollo clasico a precio fijo | $65,000 upfront + IVA + infra propia | ~$100,000-$120,000 | Muy alto |
+| Freelancers (mercado) | $40,000-$60,000 + riesgo calidad + infra propia | ~$85,000-$125,000 | Alto |
+| **Esta propuesta** | **$0 upfront. Sin gestion de infra.** | **~$81,000-$168,000** | **Bajo** |
 
 ---
 
@@ -260,7 +266,7 @@ Comparacion:
 
 ### 9.1 Duracion y Exclusividad
 
-- Contrato de 24 meses desde la puesta en produccion del MVP (go-live estimado: julio 2026).
+- Contrato de 36 meses desde la puesta en produccion del MVP (go-live estimado: julio 2026).
 - Exclusividad: el cliente se compromete a utilizar unicamente esta plataforma como sistema de gestion y cobro de cargas durante la vigencia del contrato.
 - Renovacion automatica por periodos de 12 meses al minimo de $800 USD/mes + IVA, salvo notificacion escrita con 60 dias de anticipacion.
 
@@ -272,7 +278,7 @@ Comparacion:
 
 ### 9.3 Clausula de Terminacion Anticipada
 
-- Si el cliente termina antes del mes 24, paga el **saldo pendiente de amortizacion**: $65,000 menos el total de comisiones netas (sin IVA) acumuladas hasta la fecha.
+- Si el cliente termina antes del mes 36, abona el **saldo operativo pendiente**: monto equivalente a los meses restantes al minimo de referencia vigente, descontando las comisiones netas (sin IVA) acumuladas hasta la fecha de terminacion.
 - Si el proveedor termina el contrato, entrega el codigo fuente y provee 90 dias de soporte de transicion sin costo.
 - Fuerza mayor: ambas partes negocian de buena fe.
 
@@ -287,7 +293,7 @@ Comparacion:
 - Horas adicionales: $25 USD/h + IVA.
 - Bugs criticos y actualizaciones de seguridad: sin costo.
 - Nuevas funcionalidades fuera del roadmap acordado: se cotizan.
-- Infraestructura de produccion: a cargo del cliente (ver seccion 7).
+- Infraestructura de produccion: a cargo del proveedor (ver seccion 7).
 - Ambas partes emiten CFE segun normativa DGI vigente.
 
 ---
@@ -296,12 +302,12 @@ Comparacion:
 
 | Beneficio | Descripcion |
 |---|---|
-| Cero inversion inicial | Sin desembolso de $65,000 USD por adelantado. |
-| Minimo fijo, sin sorpresas | $2,750 USD/mes constante durante 24 meses. Sin escaladas ni renegociaciones. |
-| MVP + expansion incluidos | La plataforma completa (v1 + v2) esta incluida en el acuerdo. No hay cotizaciones adicionales por las features planificadas. |
-| Minimo post-contrato bajo | Desde el mes 25, el minimo baja a $800 USD/mes — unicamente costos operativos. |
-| Infraestructura optimizada | Arquitectura para OCI free tier: servidor principal, load balancer y storage pueden ser $0/mes. |
-| Alineacion de intereses | Nuestro ingreso crece solo cuando el volumen de cargas crece. |
+| Solo se paga cuando se genera trafico | El cliente abona una comision sobre lo que su red ya esta cobrando. Si el volumen es suficiente, no existe ningun otro costo. |
+| Sin inversion inicial | Sin desembolso por desarrollo ni por infraestructura. La plataforma completa — MVP y expansion v2 — esta financiada por el proveedor. |
+| Sin gestion de infraestructura | El proveedor administra y financia toda la infraestructura de produccion. El cliente no tiene cuentas cloud, no recibe facturas de terceros y no asume costos variables. |
+| Plataforma completa incluida | El MVP y la expansion v2 estan incluidos en el acuerdo. No hay cotizaciones adicionales por las funcionalidades planificadas en el roadmap. |
+| Alineacion total de intereses | El ingreso del proveedor crece unicamente cuando el volumen de la red crece. Ambas partes tienen el mismo incentivo. |
+| Condiciones estables a largo plazo | El minimo de referencia es constante durante los 36 meses — sin escaladas ni renegociaciones. Desde el mes 37 baja a $800 USD/mes. |
 
 ---
 
@@ -312,7 +318,7 @@ Comparacion:
 3. Consulta con asesor tributario: exoneracion IRAE (Ley 19.637), estructura societaria, CFE.
 4. Firma del acuerdo comercial.
 5. Inicio del desarrollo. **Go-live MVP: 07 de julio 2026** (15 semanas).
-6. Inicio del contrato de 24 meses desde la fecha de go-live.
+6. Inicio del contrato de 36 meses desde la fecha de go-live.
 
 ---
 
